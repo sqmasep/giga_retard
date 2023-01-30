@@ -1,15 +1,17 @@
-import { prisma } from "./../db/prisma";
+import { redisCache } from "./../lib/redis";
+import { prisma } from "../lib/prisma";
 import { getServerAuthSession } from "./../auth/getServerAuthSession";
 import { getServerSession } from "next-auth";
 import { inferAsyncReturnType } from "@trpc/server";
 import { CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 export const createContext = async ({ req, res }: CreateNextContextOptions) => {
-  const session = getServerAuthSession({ req, res });
+  const session = await getServerAuthSession({ req, res });
 
   return {
     session,
     prisma,
+    redisCache,
   };
 };
 
