@@ -1,8 +1,9 @@
 import Navbar from "@/components/Navbar";
 import theme from "@/lib/mui/theme";
+import { trpc } from "@/utils/trpc";
 import { ThemeProvider } from "@mui/material";
 import { SessionProvider } from "next-auth/react";
-import type { AppProps } from "next/app";
+import type { AppProps, AppType } from "next/app";
 import React from "react";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -14,10 +15,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-export default function App({
+const App: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps) {
+}: AppProps) => {
   return (
     <ThemeProvider theme={theme}>
       <SessionProvider session={session}>
@@ -27,4 +28,6 @@ export default function App({
       </SessionProvider>
     </ThemeProvider>
   );
-}
+};
+
+export default trpc.withTRPC(App);

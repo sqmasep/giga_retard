@@ -1,10 +1,28 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import styles from "@/styles/Home.module.css";
+import { Container, Stack, Typography } from "@mui/material";
+import Button from "@/components/Button";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  return <></>;
+  return (
+    <Container>
+      <Stack direction='column'>
+        <Typography variant='h1' fontWeight={700}>
+          Partagez vos histoires de giga-retard
+        </Typography>
+
+        <Stack direction='row' alignItems='center' flexWrap='wrap'>
+          <Button variant='contained' size='large'>
+            Connectez-moi !
+          </Button>
+          <Button variant='outlined' size='large'>
+            Connectez-moi !
+          </Button>
+        </Stack>
+      </Stack>
+    </Container>
+  );
 }

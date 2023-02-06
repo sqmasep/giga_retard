@@ -1,4 +1,12 @@
-import { Avatar, Box, Chip, Container, IconButton, Stack } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Chip,
+  Container,
+  IconButton,
+  Stack,
+  Tooltip,
+} from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
@@ -21,9 +29,11 @@ const Navbar: React.FC = () => {
                 image={session.user.image || ""}
                 name={session.user.name || ""}
               />
-              <IconButton LinkComponent={Link} href='/posts/new'>
-                <Add />
-              </IconButton>
+              <Tooltip title='Nouveau post'>
+                <IconButton LinkComponent={Link} href='/posts/new'>
+                  <Add />
+                </IconButton>
+              </Tooltip>
             </>
           ) : (
             <Button

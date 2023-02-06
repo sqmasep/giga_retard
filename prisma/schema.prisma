@@ -22,7 +22,8 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Post Post[]
 
   @@unique([provider, providerAccountId])
 }
@@ -51,4 +52,12 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Post {
+  id          String  @id @default(uuid())
+  title       String
+  description String
+  author      Account @relation(fields: [accountId], references: [id])
+  accountId   String
 }
