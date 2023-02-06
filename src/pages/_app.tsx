@@ -23,7 +23,7 @@ const App: AppType = ({
     <ThemeProvider theme={theme}>
       <SessionProvider session={session}>
         <Layout>
-          <Component {...pageProps} />;
+          <Component {...pageProps} />
         </Layout>
       </SessionProvider>
     </ThemeProvider>

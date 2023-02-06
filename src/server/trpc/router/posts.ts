@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { publicProcedure } from "./../trpc";
 import { router } from "../trpc";
 import { requireAuthProcedure } from "../middleware/auth";
@@ -9,19 +10,38 @@ export const postsRouter = router({
     .input(newPostSchema)
     .mutation(async ({ ctx, input }) => {
       const { description, title } = input;
-      await ctx.prisma.post.create({
-        data: {
-          title,
-          description,
-          author: ctx.session.user,
+
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          email: ctx.session.user.email || undefined,
+        },
+        select: {
+          id: true,
         },
       });
-      console.log(ctx.session.user.name, input);
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+
+      const post = await ctx.prisma.post.create({
+        data: {
+          description,
+          title,
+          userId: user?.id,
+        },
+      });
+
+      console.log(post);
     }),
 
   save: requireAuthProcedure.mutation(({ ctx, input }) => {}),
 
   all: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.post.findMany();
+    return await ctx.prisma.post.findMany({
+      include: {
+        user: true,
+        PostRating: true,
+        PostSaved: true,
+      },
+    });
   }),
 });

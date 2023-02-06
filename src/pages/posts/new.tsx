@@ -1,4 +1,10 @@
-import { Container, Stack, TextField } from "@mui/material";
+import {
+  Container,
+  FormControlLabel,
+  Stack,
+  Switch,
+  TextField,
+} from "@mui/material";
 import React from "react";
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
@@ -23,13 +29,23 @@ const New: React.FC = () => {
   return (
     <Container>
       <Formik
-        initialValues={{ description: "", title: "" }}
+        initialValues={{ description: "", title: "", private: false }}
         onSubmit={handleSubmit}
         validationSchema={toFormikValidationSchema(newPostSchema)}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, handleChange, handleBlur, values }) => (
           <Form>
+            <pre>{JSON.stringify(values, null, 2)}</pre>
+
             <Stack direction='column' gap={4}>
+              <FormControlLabel
+                onChange={handleChange}
+                onBlur={handleBlur}
+                value={values.private}
+                label='Seulement mes amis'
+                control={<Switch />}
+                name='private'
+              />
               <Field
                 as={StyledTextField}
                 name='title'
