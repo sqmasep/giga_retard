@@ -1,9 +1,11 @@
-import { Container, Stack } from "@mui/material";
+import { Avatar, Box, Chip, Container, IconButton, Stack } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
+import AvatarChip from "./AvatarChip";
 import Button from "./Button";
 import Logo from "./Logo";
+import Add from "@mui/icons-material/Add";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
@@ -12,14 +14,28 @@ const Navbar: React.FC = () => {
     <Container>
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Logo />
-        <Button
-          LinkComponent={Link}
-          href='/api/auth/signin'
-          variant='contained'
-          size='large'
-        >
-          {session?.user ? session?.user?.name : "se connecter"}
-        </Button>
+        <Stack gap={2} direction='row' alignItems='center'>
+          {session?.user ? (
+            <>
+              <AvatarChip
+                image={session.user.image || ""}
+                name={session.user.name || ""}
+              />
+              <IconButton LinkComponent={Link} href='/posts/new'>
+                <Add />
+              </IconButton>
+            </>
+          ) : (
+            <Button
+              LinkComponent={Link}
+              href='/api/auth/signin'
+              variant='contained'
+              size='large'
+            >
+              Se connecter
+            </Button>
+          )}
+        </Stack>
       </Stack>
     </Container>
   );

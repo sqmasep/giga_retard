@@ -2,7 +2,7 @@ import { Button as MuiButton, styled } from "@mui/material";
 
 const Button = styled(MuiButton)(({ theme }) => ({
   boxShadow: ".5em .5em black",
-  outline: ".25em solid black",
+  outline: theme.styling.border,
   fontWeight: 700,
   transition: ".2s",
   "&:hover": {
