@@ -33,7 +33,21 @@ export const postsRouter = router({
       console.log(post);
     }),
 
-  save: requireAuthProcedure.mutation(({ ctx, input }) => {}),
+  save: requireAuthProcedure
+    .input(
+      z.object({
+        save: z.boolean(),
+        id: z.string().uuid(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      ctx.prisma.postSaved.update({
+        where: {
+          id: input.id,
+        },
+        data: {},
+      });
+    }),
 
   all: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.post.findMany({

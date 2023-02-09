@@ -5,7 +5,6 @@ import { Container, Grid, Typography } from "@mui/material";
 const Profile: React.FC = () => {
   return (
     <Container>
-      profile page!
       <Typography variant='h1' component='h2' fontWeight={700}>
         Mes posts
       </Typography>
