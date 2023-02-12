@@ -1,3 +1,5 @@
+import { dateDistance } from "@/lib/date/dayFormat";
+import { trpc } from "@/utils/trpc";
 import { Bookmark, Save } from "@mui/icons-material";
 import {
   Card as MuiCard,
@@ -38,6 +40,7 @@ interface CardProps {
   defaultRating?: number;
   average?: number;
   by?: unknown;
+  date?: Date | number;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -46,9 +49,11 @@ const Card: React.FC<CardProps> = ({
   title,
   by,
   average,
+  date,
 }) => {
   const { data: session } = useSession();
   const [rating, setRating] = useState(defaultRating);
+  // trpc.posts.
 
   return (
     <StyledCard>
@@ -87,13 +92,18 @@ const Card: React.FC<CardProps> = ({
           </AvatarGroup>
         </Stack>
 
-        <Typography fontWeight={700}>{title}</Typography>
+        <Typography variant='h5' component='p' fontWeight={700}>
+          {title}
+        </Typography>
         <Typography>{description}</Typography>
       </CardContent>
       <CardActions>
         <IconButton>
           <Bookmark />
         </IconButton>
+        <Typography variant='caption'>
+          il y a {date && dateDistance(date)}
+        </Typography>
       </CardActions>
     </StyledCard>
   );

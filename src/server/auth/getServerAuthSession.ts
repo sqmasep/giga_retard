@@ -1,6 +1,6 @@
-import { authOptions } from "./../../pages/api/auth/[...nextauth]";
 import { getServerSession } from "next-auth";
 import { type GetServerSidePropsContext } from "next";
+import { authOptions } from "./authOptions";
 
 export const getServerAuthSession = async ({
   req,

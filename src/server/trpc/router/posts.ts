@@ -11,51 +11,62 @@ export const postsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { description, title } = input;
 
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          email: ctx.session.user.email || undefined,
-        },
-        select: {
-          id: true,
-        },
-      });
-
-      if (!user) throw new TRPCError({ code: "NOT_FOUND" });
-
-      const post = await ctx.prisma.post.create({
+      return await ctx.prisma.post.create({
         data: {
           description,
           title,
-          userId: user?.id,
+          authorId: ctx.session.user.id,
         },
       });
-
-      console.log(post);
     }),
 
   save: requireAuthProcedure
     .input(
       z.object({
-        save: z.boolean(),
-        id: z.string().uuid(),
+        saved: z.boolean(),
+        postId: z.string().uuid(),
       })
     )
-    .mutation(({ ctx, input }) => {
-      ctx.prisma.postSaved.update({
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.savedPost.upsert({
         where: {
-          id: input.id,
+          userId_postId: {
+            userId: ctx.session.user.id,
+            postId: input.postId,
+          },
         },
-        data: {},
+        update: {
+          saved: input.saved,
+        },
+        create: {
+          saved: input.saved,
+          userId: ctx.session.user.id,
+          postId: input.postId,
+        },
       });
     }),
+
+  rate: requireAuthProcedure
+    .input(
+      z.object({ id: z.string().uuid(), rating: z.number().min(0).max(5) })
+    )
+    .query(({ ctx, input }) => {}),
 
   all: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.post.findMany({
       include: {
-        user: true,
-        PostRating: true,
-        PostSaved: true,
+        author: true,
       },
     });
   }),
+
+  byProfileId: publicProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.post.findMany({
+        where: {
+          authorId: input.id,
+        },
+      });
+    }),
 });
