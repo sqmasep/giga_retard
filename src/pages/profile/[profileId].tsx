@@ -23,9 +23,12 @@ const Profile: React.FC = () => {
           [...data].map(post => (
             <Grid key={post.id} item xs={12} sm={6} lg={4}>
               <Card
+                postId={post.id}
                 title={post.title}
                 description={post.description}
-                by={post.authorId}
+                authorId={post.authorId}
+                authorImage={post.author?.image}
+                authorName={post.author?.name}
               />
             </Grid>
           ))}

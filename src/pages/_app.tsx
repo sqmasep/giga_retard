@@ -1,4 +1,4 @@
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/ui/Navbar";
 import theme from "@/lib/mui/theme";
 import { trpc } from "@/utils/trpc";
 import { ThemeProvider } from "@mui/material";

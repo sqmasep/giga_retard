@@ -10,9 +10,9 @@ import {
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
-import AvatarChip from "./AvatarChip";
-import Button from "./Button";
-import Logo from "./Logo";
+import AvatarChip from "../AvatarChip";
+import Button from "../Button";
+import Logo from "../Logo";
 import Add from "@mui/icons-material/Add";
 
 const Navbar: React.FC = () => {

@@ -76,23 +76,25 @@ model Post {
 }
 
 model SavedPost {
-  id     String  @id @default(uuid())
-  saved  Boolean
-  Post   Post    @relation("SavedPost", fields: [postId], references: [id])
-  User   User    @relation("UserSaved", fields: [userId], references: [id])
-  userId String
-  postId String
+  id      String   @id @default(uuid())
+  saved   Boolean
+  savedAt DateTime @updatedAt
+  Post    Post     @relation("SavedPost", fields: [postId], references: [id])
+  User    User     @relation("UserSaved", fields: [userId], references: [id])
+  userId  String
+  postId  String
 
   @@unique([userId, postId])
 }
 
 model RatedPost {
-  id     String @id @default(uuid())
-  rating Int
-  Post   Post   @relation("RatedPost", fields: [postId], references: [id])
-  User   User   @relation("UserRating", fields: [userId], references: [id])
-  userId String
-  postId String
+  id      String   @id @default(uuid())
+  rating  Float?
+  ratedAt DateTime @updatedAt
+  Post    Post     @relation("RatedPost", fields: [postId], references: [id])
+  User    User     @relation("UserRating", fields: [userId], references: [id])
+  userId  String
+  postId  String
 
   @@unique([userId, postId])
 }
