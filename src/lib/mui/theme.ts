@@ -46,6 +46,14 @@ theme = createTheme(theme, {
         root: {
           outline: theme.styling.outline,
           boxShadow: theme.styling.shadow,
+          border: "none",
+          fontWeight: 700,
+          transition: ".2s",
+          "&:hover": {
+            transform: "translate(.5em, .5em)",
+            boxShadow: "none",
+            border: "none",
+          },
         },
         outlined: {
           color: "black",

@@ -1,8 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
-import { Container, Stack, Typography } from "@mui/material";
-import Button from "@/components/Button";
+import { Button, Container, Stack, Typography } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 

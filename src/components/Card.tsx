@@ -1,4 +1,3 @@
-import useConfirm from "@/hooks/useConfirm";
 import useToggle from "@/hooks/useToggle";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
@@ -7,7 +6,6 @@ import {
   Card as MuiCard,
   CardContent,
   CardActions,
-  styled,
   Typography,
   Rating,
   Stack,
@@ -20,13 +18,11 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  Button,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
-import Button from "./Button";
-
-const StyledCard = styled(MuiCard)(({ theme }) => ({}));
 
 interface CardProps {
   postId: string;
@@ -58,12 +54,16 @@ const Card: React.FC<CardProps> = ({
   const { data: session } = useSession();
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
-  const [isConfirmed, confirm] = useConfirm();
   const [isDialogOpen, toggleDialogOpen] = useToggle(false);
+  const utils = trpc.useContext();
 
   const saveMutation = trpc.posts.save.useMutation();
   const rateMutation = trpc.posts.rate.useMutation();
-  const deleteMutation = trpc.posts.delete.useMutation();
+  const deleteMutation = trpc.posts.delete.useMutation({
+    onSuccess: () => {
+      utils.posts.invalidate();
+    },
+  });
 
   const handleSave = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -81,11 +81,14 @@ const Card: React.FC<CardProps> = ({
     rateMutation.mutate({ rating: value, postId });
   };
 
-  const handleDelete = () => toggleDialogOpen(true);
-  const confirmDelete = () => isConfirmed && deleteMutation.mutate({ postId });
+  const handleDelete = () => {
+    console.log(postId);
+    deleteMutation.mutate({ postId });
+    toggleDialogOpen(false);
+  };
 
   return (
-    <StyledCard>
+    <MuiCard>
       <CardContent>
         <Stack
           direction='row'
@@ -96,12 +99,18 @@ const Card: React.FC<CardProps> = ({
           {session?.user.id !== authorId ? (
             <>
               <Stack direction='row' alignItems='center' gap={1}>
-                <Rating precision={0.5} value={rating} onChange={handleRate} />
+                <Rating
+                  disabled={!session}
+                  precision={0.5}
+                  value={rating}
+                  onChange={handleRate}
+                />
                 {average && (
                   <Typography variant='caption'>{average}</Typography>
                 )}
               </Stack>
               <Checkbox
+                disabled={!session}
                 icon={<BookmarkBorder />}
                 checkedIcon={<Bookmark />}
                 checked={saved}
@@ -111,7 +120,7 @@ const Card: React.FC<CardProps> = ({
           ) : (
             deleteButton && (
               <>
-                <IconButton onClick={handleDelete}>
+                <IconButton onClick={() => toggleDialogOpen(true)}>
                   <DeleteForever />
                 </IconButton>
                 <Dialog
@@ -125,8 +134,17 @@ const Card: React.FC<CardProps> = ({
                     </DialogContentText>
                   </DialogContent>
                   <DialogActions>
-                    <Button variant='outlined'>Non! Annule!</Button>
-                    <Button variant='contained'>Je confirme!</Button>
+                    <Stack gap={2} direction='row'>
+                      <Button
+                        variant='outlined'
+                        onClick={() => toggleDialogOpen(false)}
+                      >
+                        Non! Annule!
+                      </Button>
+                      <Button variant='contained' onClick={handleDelete}>
+                        Je confirme!
+                      </Button>
+                    </Stack>
                   </DialogActions>
                 </Dialog>
               </>
@@ -166,7 +184,7 @@ const Card: React.FC<CardProps> = ({
           </Stack>
         )}
       </CardActions>
-    </StyledCard>
+    </MuiCard>
   );
 };
 

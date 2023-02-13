@@ -1,18 +1,27 @@
 import Card from "@/components/Card";
 import CardList from "@/components/ui/CardList";
 import { trpc } from "@/utils/trpc";
-import { Container, Grid, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Stack,
+  Typography,
+} from "@mui/material";
+import Link from "next/link";
 
 const Posts: React.FC = () => {
-  const { data } = trpc.posts.all.useQuery();
+  const { data, isLoading, isError } = trpc.posts.all.useQuery();
 
   return (
     <Container>
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <Typography variant='h1' fontWeight={900}>
+      <Typography variant='h1' textAlign='center' my={12} fontWeight={900}>
         Les posts
       </Typography>
-      {data && (
+      {isLoading && <CircularProgress />}
+      {data?.length ? (
         <CardList data={data}>
           {post => (
             <Card
@@ -28,6 +37,20 @@ const Posts: React.FC = () => {
             />
           )}
         </CardList>
+      ) : (
+        <Stack direction='column' alignItems='center'>
+          <Typography variant='h2' mb={4} textAlign='center'>
+            Pas de posts :(
+          </Typography>
+          <Button
+            variant='contained'
+            size='large'
+            LinkComponent={Link}
+            href='/posts/new'
+          >
+            J'en crée un !
+          </Button>
+        </Stack>
       )}
     </Container>
   );

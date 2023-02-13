@@ -170,10 +170,15 @@ export const postsRouter = router({
       if (!post || post?.authorId !== ctx.session.user.id)
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
-      return await ctx.prisma.post.delete({
+      console.log("yes youre gonna delete it");
+      const a = await ctx.prisma.post.delete({
         where: {
           id: input.postId,
         },
       });
+      console.log(a);
+      console.log(input);
+
+      return a;
     }),
 });
