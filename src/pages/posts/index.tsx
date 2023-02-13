@@ -1,4 +1,5 @@
 import Card from "@/components/Card";
+import CardList from "@/components/ui/CardList";
 import { trpc } from "@/utils/trpc";
 import { Container, Grid, Typography } from "@mui/material";
 
@@ -11,9 +12,9 @@ const Posts: React.FC = () => {
       <Typography variant='h1' fontWeight={900}>
         Les posts
       </Typography>
-      <Grid mt={8} container spacing={4}>
-        {data?.map(post => (
-          <Grid key={post.id} item xs={12} sm={6} lg={4}>
+      {data && (
+        <CardList data={data}>
+          {post => (
             <Card
               postId={post.id}
               title={post.title}
@@ -25,9 +26,9 @@ const Posts: React.FC = () => {
               authorImage={post.author?.image}
               authorName={post.author?.name}
             />
-          </Grid>
-        ))}
-      </Grid>
+          )}
+        </CardList>
+      )}
     </Container>
   );
 };

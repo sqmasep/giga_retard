@@ -129,4 +129,51 @@ export const postsRouter = router({
         },
       });
     }),
+
+  personalInfos: requireAuthProcedure.query(async ({ ctx }) => {
+    const posts = await ctx.prisma.post.findMany({
+      where: {
+        authorId: ctx.session.user.id,
+      },
+    });
+
+    return {
+      posts,
+    };
+  }),
+
+  savedPosts: requireAuthProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.savedPost.findMany({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      include: {
+        Post: true,
+      },
+    });
+  }),
+
+  delete: requireAuthProcedure
+    .input(
+      z.object({
+        postId: z.string().uuid(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const post = await ctx.prisma.post.findUnique({
+        where: {
+          id: input.postId,
+        },
+      });
+
+      // DANGER: might be dangerous to do it like so??
+      if (!post || post?.authorId !== ctx.session.user.id)
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+
+      return await ctx.prisma.post.delete({
+        where: {
+          id: input.postId,
+        },
+      });
+    }),
 });

@@ -1,6 +1,7 @@
+import useConfirm from "@/hooks/useConfirm";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
-import { Bookmark, BookmarkBorder } from "@mui/icons-material";
+import { Bookmark, BookmarkBorder, DeleteForever } from "@mui/icons-material";
 import {
   Card as MuiCard,
   CardContent,
@@ -12,6 +13,7 @@ import {
   Avatar,
   Checkbox,
   Tooltip,
+  IconButton,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -43,6 +45,7 @@ interface CardProps {
   authorName?: string | null;
   authorImage?: string | null;
   authorId?: string | null;
+  deleteButton?: boolean;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -56,12 +59,16 @@ const Card: React.FC<CardProps> = ({
   authorId,
   average,
   date,
+  deleteButton,
 }) => {
   const { data: session } = useSession();
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
+  const [isConfirmed, confirm] = useConfirm();
+
   const saveMutation = trpc.posts.save.useMutation();
   const rateMutation = trpc.posts.rate.useMutation();
+  const deleteMutation = trpc.posts.delete.useMutation();
 
   const handleSave = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -79,6 +86,10 @@ const Card: React.FC<CardProps> = ({
     rateMutation.mutate({ rating: value, postId });
   };
 
+  const handleDelete = () => {
+    isConfirmed && deleteMutation.mutate({ postId });
+  };
+
   return (
     <StyledCard>
       <CardContent>
@@ -88,7 +99,7 @@ const Card: React.FC<CardProps> = ({
           alignItems='center'
           justifyContent='space-between'
         >
-          {session?.user.id !== authorId && (
+          {session?.user.id !== authorId ? (
             <>
               <Stack direction='row' alignItems='center' gap={1}>
                 <Rating precision={0.5} value={rating} onChange={handleRate} />
@@ -103,6 +114,12 @@ const Card: React.FC<CardProps> = ({
                 onChange={handleSave}
               />
             </>
+          ) : (
+            deleteButton && (
+              <IconButton onClick={handleDelete}>
+                <DeleteForever />
+              </IconButton>
+            )
           )}
         </Stack>
 

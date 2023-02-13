@@ -1,11 +1,12 @@
 import {
   Container,
   FormControlLabel,
+  IconButton,
   Stack,
   Switch,
   TextField,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, FormikHelpers, ErrorMessage } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { trpc } from "@/utils/trpc";
@@ -13,19 +14,26 @@ import { z } from "zod";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { newPostSchema } from "@/server/trpc/router/validation/posts";
 import StyledTextField from "@/components/TextField";
+import useToggle from "@/hooks/useToggle";
+import { Close } from "@mui/icons-material";
+import Snackbar from "@/components/Snackbar";
 
 type NewPost = z.infer<typeof newPostSchema>;
 
 const New: React.FC = () => {
+  const [snackbarOpen, toggleSnackbar] = useToggle();
   const newMutation = trpc.posts.new.useMutation();
+
   const handleSubmit = (
     { title, description }: NewPost,
     helpers: FormikHelpers<NewPost>
   ) => {
     newMutation.mutate({ title, description });
-    helpers.resetForm();
+    newMutation.isSuccess && helpers.resetForm();
+
+    toggleSnackbar(true);
   };
-  console.log(newMutation);
+
   return (
     <Container>
       <Formik
@@ -72,6 +80,17 @@ const New: React.FC = () => {
           </Form>
         )}
       </Formik>
+      <Snackbar
+        open={snackbarOpen}
+        onClose={() => toggleSnackbar(false)}
+        message={newMutation.isSuccess && "Le post a été créé avec succès !"}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+        action={
+          <IconButton onClick={() => toggleSnackbar(false)}>
+            <Close />
+          </IconButton>
+        }
+      />
     </Container>
   );
 };

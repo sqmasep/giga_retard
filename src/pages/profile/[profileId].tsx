@@ -3,8 +3,10 @@ import React from "react";
 import { Container, Grid, Typography } from "@mui/material";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
+import { useSession } from "next-auth/react";
 
 const Profile: React.FC = () => {
+  const { data: session } = useSession();
   const { query } = useRouter();
   const { data, error } = trpc.posts.byProfileId.useQuery(
     { id: query.profileId as string },
@@ -15,8 +17,10 @@ const Profile: React.FC = () => {
 
   return (
     <Container>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+
       <Typography variant='h1' component='h2' fontWeight={700}>
-        Mes posts
+        Les posts de
       </Typography>
       <Grid container spacing={4}>
         {data &&
