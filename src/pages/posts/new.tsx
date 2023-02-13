@@ -2,6 +2,7 @@ import {
   Container,
   FormControlLabel,
   IconButton,
+  Snackbar,
   Stack,
   Switch,
   TextField,
@@ -13,10 +14,8 @@ import { trpc } from "@/utils/trpc";
 import { z } from "zod";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { newPostSchema } from "@/server/trpc/router/validation/posts";
-import StyledTextField from "@/components/TextField";
 import useToggle from "@/hooks/useToggle";
 import { Close } from "@mui/icons-material";
-import Snackbar from "@/components/Snackbar";
 
 type NewPost = z.infer<typeof newPostSchema>;
 
@@ -55,14 +54,14 @@ const New: React.FC = () => {
                 name='private'
               />
               <Field
-                as={StyledTextField}
+                as={TextField}
                 name='title'
                 error={errors.title && touched.title}
                 label='Titre'
                 helperText={touched.title && errors.title}
               />
               <Field
-                as={StyledTextField}
+                as={TextField}
                 name='description'
                 error={errors.description && touched.description}
                 label='Description'

@@ -18,6 +18,7 @@ const Me: React.FC = () => {
               title={post.title}
               description={post.description}
               postId={post.id}
+              authorId={post.authorId}
               deleteButton
               date={post.createdAt}
             />

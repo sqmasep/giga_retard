@@ -1,4 +1,5 @@
 import useConfirm from "@/hooks/useConfirm";
+import useToggle from "@/hooks/useToggle";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
 import { Bookmark, BookmarkBorder, DeleteForever } from "@mui/icons-material";
@@ -14,25 +15,18 @@ import {
   Checkbox,
   Tooltip,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import React, { useState } from "react";
+import Button from "./Button";
 
-const StyledCard = styled(MuiCard)(({ theme }) => ({
-  outline: theme.styling.border,
-  boxShadow: `
-  .5em .1em black, 
-  .5em .2em black, 
-  .5em .3em black, 
-  .5em .4em black, 
-  .5em .5em black, 
-  .1em .5em black, 
-  .2em .5em black, 
-  .3em .5em black, 
-  .4em .5em black`,
-  padding: theme.spacing(1),
-}));
+const StyledCard = styled(MuiCard)(({ theme }) => ({}));
 
 interface CardProps {
   postId: string;
@@ -65,6 +59,7 @@ const Card: React.FC<CardProps> = ({
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
   const [isConfirmed, confirm] = useConfirm();
+  const [isDialogOpen, toggleDialogOpen] = useToggle(false);
 
   const saveMutation = trpc.posts.save.useMutation();
   const rateMutation = trpc.posts.rate.useMutation();
@@ -82,13 +77,12 @@ const Card: React.FC<CardProps> = ({
     e: React.SyntheticEvent<Element, Event>,
     value: number | null
   ) => {
-    setRating(value || null);
+    setRating(value);
     rateMutation.mutate({ rating: value, postId });
   };
 
-  const handleDelete = () => {
-    isConfirmed && deleteMutation.mutate({ postId });
-  };
+  const handleDelete = () => toggleDialogOpen(true);
+  const confirmDelete = () => isConfirmed && deleteMutation.mutate({ postId });
 
   return (
     <StyledCard>
@@ -116,9 +110,26 @@ const Card: React.FC<CardProps> = ({
             </>
           ) : (
             deleteButton && (
-              <IconButton onClick={handleDelete}>
-                <DeleteForever />
-              </IconButton>
+              <>
+                <IconButton onClick={handleDelete}>
+                  <DeleteForever />
+                </IconButton>
+                <Dialog
+                  open={isDialogOpen}
+                  onClose={() => toggleDialogOpen(false)}
+                >
+                  <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Cela causera une suppression irréversible du post!
+                    </DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button variant='outlined'>Non! Annule!</Button>
+                    <Button variant='contained'>Je confirme!</Button>
+                  </DialogActions>
+                </Dialog>
+              </>
             )
           )}
         </Stack>
