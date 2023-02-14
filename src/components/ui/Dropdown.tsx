@@ -4,6 +4,7 @@ import { List, styled } from "@mui/material";
 
 interface DropdownProps {
   children: React.ReactNode;
+  open: boolean;
 }
 
 const StyledList = styled(List)(({ theme }) => ({
@@ -14,10 +15,10 @@ const StyledList = styled(List)(({ theme }) => ({
 
 const Dropdown: React.FC<
   DropdownProps & React.ComponentProps<typeof StyledList>
-> = ({ children, ...props }) => {
+> = ({ children, open, ...props }) => {
   return (
     <AnimatePresence>
-      <StyledList {...props}>{children}</StyledList>
+      {open && <StyledList {...props}>{children}</StyledList>}
     </AnimatePresence>
   );
 };

@@ -4,6 +4,7 @@ import {
   Button,
   ButtonBase,
   Chip,
+  ClickAwayListener,
   Container,
   IconButton,
   ListItem,
@@ -21,9 +22,11 @@ import Logo from "../Logo";
 import Add from "@mui/icons-material/Add";
 import Dropdown from "./Dropdown";
 import { AccountCircle, Logout } from "@mui/icons-material";
+import useToggle from "@/hooks/useToggle";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
+  const [userDropdown, toggleUserDropdown] = useToggle();
 
   return (
     <Container>
@@ -40,33 +43,38 @@ const Navbar: React.FC = () => {
                   />
                 </ButtonBase>
 
-                <Dropdown
-                  sx={{
-                    position: "absolute",
-                    top: "100%",
-                    left: "50%",
-                    zIndex: 999,
-                    transform: "translateX(-50%)",
-                  }}
+                <ClickAwayListener
+                  onClickAway={() => toggleUserDropdown(false)}
                 >
-                  <ListItem disablePadding>
-                    <ListItemButton LinkComponent={Link} href='/profile/me'>
-                      <ListItemIcon>
-                        <AccountCircle />
-                      </ListItemIcon>
-                      <ListItemText>Profil</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
+                  <Dropdown
+                    open={userDropdown}
+                    sx={{
+                      position: "absolute",
+                      top: "100%",
+                      left: "50%",
+                      zIndex: 999,
+                      transform: "translateX(-50%)",
+                    }}
+                  >
+                    <ListItem disablePadding>
+                      <ListItemButton LinkComponent={Link} href='/profile/me'>
+                        <ListItemIcon>
+                          <AccountCircle />
+                        </ListItemIcon>
+                        <ListItemText>Profil</ListItemText>
+                      </ListItemButton>
+                    </ListItem>
 
-                  <ListItem disablePadding>
-                    <ListItemButton onClick={() => signOut()}>
-                      <ListItemIcon>
-                        <Logout />
-                      </ListItemIcon>
-                      <ListItemText>Se déconnecter</ListItemText>
-                    </ListItemButton>
-                  </ListItem>
-                </Dropdown>
+                    <ListItem disablePadding>
+                      <ListItemButton onClick={() => signOut()}>
+                        <ListItemIcon>
+                          <Logout />
+                        </ListItemIcon>
+                        <ListItemText>Se déconnecter</ListItemText>
+                      </ListItemButton>
+                    </ListItem>
+                  </Dropdown>
+                </ClickAwayListener>
               </Box>
 
               <Tooltip title='Nouveau post'>

@@ -6,9 +6,13 @@ interface CardListProps<T> {
   data: T[];
 }
 
-const CardList = <T,>({ children, data }: CardListProps<T>) => {
+const CardList = <T,>({
+  children,
+  data,
+  ...props
+}: CardListProps<T> & Omit<React.ComponentProps<typeof Grid>, "children">) => {
   return (
-    <Grid container spacing={4}>
+    <Grid container spacing={4} {...props}>
       {data.map((card, i, arr) => (
         <Grid key={i} item xs={12} sm={6} lg={4}>
           {children(card, i, arr)}

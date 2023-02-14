@@ -1,16 +1,18 @@
-import { createTheme } from "@mui/material";
+import { createTheme, ThemeOptions } from "@mui/material";
 
 declare module "@mui/material/styles" {
   interface Theme {
     styling: {
       outline: string;
       shadow: string;
+      roundness: string;
     };
   }
   interface ThemeOptions {
     styling?: {
       outline?: string;
       shadow?: string;
+      roundness?: string;
     };
   }
 }
@@ -28,6 +30,7 @@ let theme = createTheme({
             .2em .5em black,
             .3em .5em black,
             .4em .5em black`,
+    roundness: ".25em",
   },
   palette: {
     primary: {
@@ -74,6 +77,14 @@ theme = createTheme(theme, {
         },
       },
     },
+    MuiTabs: {
+      styleOverrides: {
+        root: {
+          outline: theme.styling.outline,
+          borderRadius: theme.styling.roundness,
+        },
+      },
+    },
     MuiCard: {
       styleOverrides: {
         root: {
@@ -109,6 +120,6 @@ theme = createTheme(theme, {
       },
     },
   },
-});
+} as ThemeOptions);
 
 export default theme;
