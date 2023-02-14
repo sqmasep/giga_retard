@@ -19,6 +19,8 @@ import {
   DialogContentText,
   DialogActions,
   Button,
+  ButtonBase,
+  styled,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -36,7 +38,28 @@ interface CardProps {
   authorImage?: string | null;
   authorId?: string | null;
   deleteButton?: boolean;
+  readMore?: boolean;
 }
+
+const StyledButtonBase = styled(ButtonBase)(({ theme }) => ({
+  textAlign: "left",
+  boxShadow: `
+      .5em .1em black, 
+      .5em .2em black, 
+      .5em .3em black, 
+      .5em .4em black, 
+      .5em .5em black, 
+      .1em .5em black, 
+      .2em .5em black, 
+      .3em .5em black, 
+      .4em .5em black`,
+  borderRadius: ".25em",
+  transition: ".2s",
+  "&:where(:hover, :focus-visible)": {
+    boxShadow: "none",
+    transform: "translate(.5em, .5em)",
+  },
+}));
 
 const Card: React.FC<CardProps> = ({
   postId,
@@ -50,6 +73,7 @@ const Card: React.FC<CardProps> = ({
   average,
   date,
   deleteButton,
+  readMore = false,
 }) => {
   const { data: session } = useSession();
   const [rating, setRating] = useState(defaultRating);
@@ -57,13 +81,11 @@ const Card: React.FC<CardProps> = ({
   const [isDialogOpen, toggleDialogOpen] = useToggle(false);
   const utils = trpc.useContext();
 
-  const saveMutation = trpc.posts.save.useMutation();
-  const rateMutation = trpc.posts.rate.useMutation();
-  const deleteMutation = trpc.posts.delete.useMutation({
-    onSuccess: () => {
-      utils.posts.invalidate();
-    },
-  });
+  const onSuccess = () => utils.posts.invalidate();
+
+  const saveMutation = trpc.posts.save.useMutation({ onSuccess });
+  const rateMutation = trpc.posts.rate.useMutation({ onSuccess });
+  const deleteMutation = trpc.posts.delete.useMutation({ onSuccess });
 
   const handleSave = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -156,6 +178,16 @@ const Card: React.FC<CardProps> = ({
           {title}
         </Typography>
         <Typography>{description}</Typography>
+        {readMore && (
+          <Button
+            variant='text'
+            size='small'
+            LinkComponent={Link}
+            href={`/posts/${postId}`}
+          >
+            voir plus
+          </Button>
+        )}
       </CardContent>
       <CardActions>
         {authorImage && (

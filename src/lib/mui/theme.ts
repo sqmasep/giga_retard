@@ -18,7 +18,16 @@ declare module "@mui/material/styles" {
 let theme = createTheme({
   styling: {
     outline: ".25em solid black",
-    shadow: ".5em .5em black",
+    shadow: `
+            .5em .1em black,
+            .5em .2em black,
+            .5em .3em black,
+            .5em .4em black,
+            .5em .5em black,
+            .1em .5em black,
+            .2em .5em black,
+            .3em .5em black,
+            .4em .5em black`,
   },
   palette: {
     primary: {
@@ -41,6 +50,7 @@ theme = createTheme(theme, {
         fixed: true,
       },
     },
+
     MuiButton: {
       styleOverrides: {
         root: {
@@ -49,7 +59,7 @@ theme = createTheme(theme, {
           border: "none",
           fontWeight: 700,
           transition: ".2s",
-          "&:hover": {
+          "&:is(:hover, :focus-visible)": {
             transform: "translate(.5em, .5em)",
             boxShadow: "none",
             border: "none",
@@ -58,23 +68,24 @@ theme = createTheme(theme, {
         outlined: {
           color: "black",
         },
+        text: {
+          outline: "none",
+          boxShadow: "none",
+        },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: `
-            .5em .1em black, 
-            .5em .2em black, 
-            .5em .3em black, 
-            .5em .4em black, 
-            .5em .5em black, 
-            .1em .5em black, 
-            .2em .5em black, 
-            .3em .5em black, 
-            .4em .5em black`,
           padding: theme.spacing(1),
           outline: theme.styling.outline,
+          boxShadow: theme.styling.shadow,
+          transition: ".2s",
+          "&:is(:hover, :focus-visible)": {
+            transform: "translate(.5em, .5em)",
+            boxShadow: "none",
+            border: "none",
+          },
         },
       },
     },

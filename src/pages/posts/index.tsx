@@ -20,7 +20,6 @@ const Posts: React.FC = () => {
       <Typography variant='h1' textAlign='center' my={12} fontWeight={900}>
         Les posts
       </Typography>
-      {isLoading && <CircularProgress />}
       {data?.length ? (
         <CardList data={data}>
           {post => (
@@ -31,12 +30,15 @@ const Posts: React.FC = () => {
               defaultRating={post.ratedPost[0]?.rating}
               description={post.description}
               date={post.createdAt}
+              readMore
               authorId={post.authorId}
               authorImage={post.author?.image}
               authorName={post.author?.name}
             />
           )}
         </CardList>
+      ) : isLoading ? (
+        <CircularProgress />
       ) : (
         <Stack direction='column' alignItems='center'>
           <Typography variant='h2' mb={4} textAlign='center'>

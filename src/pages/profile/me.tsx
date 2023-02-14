@@ -3,11 +3,12 @@ import CardList from "@/components/ui/CardList";
 import { trpc } from "@/utils/trpc";
 import { Container } from "@mui/material";
 import { useSession } from "next-auth/react";
-import React from "react";
+import React, { useState } from "react";
 
 const Me: React.FC = () => {
   const { data: session } = useSession();
   const { data, isLoading, isError } = trpc.posts.personalInfos.useQuery();
+  const [selectedTab, setSelectedTab] = useState(0);
 
   return (
     <Container>

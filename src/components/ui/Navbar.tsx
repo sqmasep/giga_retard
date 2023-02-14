@@ -2,18 +2,25 @@ import {
   Avatar,
   Box,
   Button,
+  ButtonBase,
   Chip,
   Container,
   IconButton,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Stack,
   Tooltip,
 } from "@mui/material";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import React from "react";
 import AvatarChip from "../AvatarChip";
 import Logo from "../Logo";
 import Add from "@mui/icons-material/Add";
+import Dropdown from "./Dropdown";
+import { AccountCircle, Logout } from "@mui/icons-material";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
@@ -25,10 +32,43 @@ const Navbar: React.FC = () => {
         <Stack gap={2} direction='row' alignItems='center'>
           {session?.user ? (
             <>
-              <AvatarChip
-                image={session.user.image || ""}
-                name={session.user.name || ""}
-              />
+              <Box position='relative'>
+                <ButtonBase onClick={() => console.log("wow")}>
+                  <AvatarChip
+                    image={session.user.image || ""}
+                    name={session.user.name || ""}
+                  />
+                </ButtonBase>
+
+                <Dropdown
+                  sx={{
+                    position: "absolute",
+                    top: "100%",
+                    left: "50%",
+                    zIndex: 999,
+                    transform: "translateX(-50%)",
+                  }}
+                >
+                  <ListItem disablePadding>
+                    <ListItemButton LinkComponent={Link} href='/profile/me'>
+                      <ListItemIcon>
+                        <AccountCircle />
+                      </ListItemIcon>
+                      <ListItemText>Profil</ListItemText>
+                    </ListItemButton>
+                  </ListItem>
+
+                  <ListItem disablePadding>
+                    <ListItemButton onClick={() => signOut()}>
+                      <ListItemIcon>
+                        <Logout />
+                      </ListItemIcon>
+                      <ListItemText>Se déconnecter</ListItemText>
+                    </ListItemButton>
+                  </ListItem>
+                </Dropdown>
+              </Box>
+
               <Tooltip title='Nouveau post'>
                 <IconButton LinkComponent={Link} href='/posts/new'>
                   <Add />
