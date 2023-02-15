@@ -76,12 +76,6 @@ const Navbar: React.FC = () => {
                   </Dropdown>
                 </ClickAwayListener>
               </Box>
-
-              <Tooltip title='Nouveau post'>
-                <IconButton LinkComponent={Link} href='/posts/new'>
-                  <Add />
-                </IconButton>
-              </Tooltip>
             </>
           ) : (
             <Button

@@ -11,10 +11,10 @@ interface TabProps {
   component: React.ReactNode;
 }
 
-const tabs: TabProps[] = [
+const tabs = [
   { label: "Posts", component: <></>, value: "posts" } as const,
   { label: "Stats", component: <></>, value: "stats" } as const,
-];
+] satisfies TabProps[];
 
 type TabsValues = (typeof tabs)[number]["value"];
 

@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions } from "@mui/material";
+import { createTheme, responsiveFontSizes, ThemeOptions } from "@mui/material";
 
 declare module "@mui/material/styles" {
   interface Theme {
@@ -34,7 +34,8 @@ let theme = createTheme({
   },
   palette: {
     primary: {
-      main: "#ff7777",
+      // main: "#ff7777",
+      main: "#0469FF",
     },
   },
   typography: {
@@ -74,6 +75,13 @@ theme = createTheme(theme, {
         text: {
           outline: "none",
           boxShadow: "none",
+        },
+      },
+    },
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          outline: theme.styling.outline,
         },
       },
     },
@@ -121,5 +129,7 @@ theme = createTheme(theme, {
     },
   },
 } as ThemeOptions);
+
+theme = responsiveFontSizes(theme);
 
 export default theme;

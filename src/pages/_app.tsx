@@ -1,4 +1,5 @@
 import Navbar from "@/components/ui/Navbar";
+import Overlay from "@/components/ui/Overlay";
 import theme from "@/lib/mui/theme";
 import { trpc } from "@/utils/trpc";
 import { ThemeProvider } from "@mui/material";
@@ -11,6 +12,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <>
       <Navbar />
       {children}
+      <Overlay />
     </>
   );
 };

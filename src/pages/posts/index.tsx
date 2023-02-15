@@ -2,7 +2,9 @@ import Card from "@/components/Card";
 import CardList from "@/components/ui/CardList";
 import { trpc } from "@/utils/trpc";
 import {
+  Box,
   Button,
+  Checkbox,
   CircularProgress,
   Container,
   Grid,
@@ -17,9 +19,23 @@ const Posts: React.FC = () => {
   return (
     <Container>
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      <Typography variant='h1' textAlign='center' my={12} fontWeight={900}>
+      <Typography variant='h1' textAlign='center' mt={12} fontWeight={900}>
         Les posts
       </Typography>
+
+      <Box
+        sx={{
+          borderRadius: "50rem",
+          outline: theme => theme.styling.outline,
+          boxShadow: theme => theme.styling.shadow,
+          my: 8,
+          maxWidth: "50rem",
+          mx: "auto",
+        }}
+      >
+        <Checkbox />
+      </Box>
+
       {data?.length ? (
         <CardList data={data}>
           {post => (
