@@ -82,6 +82,9 @@ export const postsRouter = router({
     });
 
     const posts = await ctx.prisma.post.findMany({
+      where: {
+        deleted: false,
+      },
       include: {
         author: true,
         savedPost: {
@@ -171,9 +174,13 @@ export const postsRouter = router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
 
       console.log("yes youre gonna delete it");
-      const a = await ctx.prisma.post.delete({
+      console.log(input.postId);
+      const a = await ctx.prisma.post.update({
         where: {
           id: input.postId,
+        },
+        data: {
+          deleted: true,
         },
       });
       console.log(a);

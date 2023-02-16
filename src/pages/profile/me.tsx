@@ -12,8 +12,13 @@ interface TabProps {
 }
 
 const tabs = [
-  { label: "Posts", component: <></>, value: "posts" } as const,
+  { label: "Mes posts", component: <></>, value: "myPosts" } as const,
   { label: "Stats", component: <></>, value: "stats" } as const,
+  {
+    label: "Posts sauvegardés",
+    component: <></>,
+    value: "savedPosts",
+  } as const,
 ] satisfies TabProps[];
 
 type TabsValues = (typeof tabs)[number]["value"];

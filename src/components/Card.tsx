@@ -1,3 +1,4 @@
+import useSnackbar from "@/hooks/useSnackbar";
 import useToggle from "@/hooks/useToggle";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
@@ -21,6 +22,7 @@ import {
   Button,
   ButtonBase,
   styled,
+  Snackbar,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -39,6 +41,7 @@ interface CardProps {
   authorId?: string | null;
   deleteButton?: boolean;
   readMore?: boolean;
+  deleted?: boolean;
 }
 
 const StyledButtonBase = styled(ButtonBase)(({ theme }) => ({
@@ -74,18 +77,27 @@ const Card: React.FC<CardProps> = ({
   date,
   deleteButton,
   readMore = false,
+  deleted,
 }) => {
   const { data: session } = useSession();
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
   const [isDialogOpen, toggleDialogOpen] = useToggle(false);
+  const snackbar = useSnackbar();
   const utils = trpc.useContext();
 
-  const onSuccess = () => utils.posts.invalidate();
+  const onSuccess = () => {
+    utils.posts.invalidate();
+  };
 
   const saveMutation = trpc.posts.save.useMutation({ onSuccess });
   const rateMutation = trpc.posts.rate.useMutation({ onSuccess });
-  const deleteMutation = trpc.posts.delete.useMutation({ onSuccess });
+  const deleteMutation = trpc.posts.delete.useMutation({
+    onSuccess: data => {
+      onSuccess();
+      snackbar.setMessage(`Le post "${data.title}" a bien été supprimé!`);
+    },
+  });
 
   const handleSave = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -169,6 +181,7 @@ const Card: React.FC<CardProps> = ({
                     </Stack>
                   </DialogActions>
                 </Dialog>
+                {snackbar.open && <Snackbar onClose={snackbar.close} />}
               </>
             )
           )}
