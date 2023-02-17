@@ -75,6 +75,10 @@ theme = createTheme(theme, {
         text: {
           outline: "none",
           boxShadow: "none",
+          "&:is(:hover, :focus-visible)": {
+            transform: "none",
+            boxShadow: theme.styling.shadow,
+          },
         },
       },
     },

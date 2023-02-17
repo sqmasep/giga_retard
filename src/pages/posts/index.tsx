@@ -11,6 +11,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import Head from "next/head";
 import Link from "next/link";
 
 const Posts: React.FC = () => {
@@ -18,6 +19,10 @@ const Posts: React.FC = () => {
 
   return (
     <Container>
+      <Head>
+        <title>giga-retard - les posts</title>
+      </Head>
+
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <Typography variant='h1' textAlign='center' mt={12} fontWeight={900}>
         Les posts

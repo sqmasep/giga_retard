@@ -16,6 +16,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import { newPostSchema } from "@/server/trpc/router/validation/posts";
 import useToggle from "@/hooks/useToggle";
 import { Close } from "@mui/icons-material";
+import Head from "next/head";
 
 type NewPost = z.infer<typeof newPostSchema>;
 
@@ -35,6 +36,9 @@ const New: React.FC = () => {
 
   return (
     <Container>
+      <Head>
+        <title>giga-retard - nouveau post</title>
+      </Head>
       <Formik
         initialValues={{ description: "", title: "", private: false }}
         onSubmit={handleSubmit}

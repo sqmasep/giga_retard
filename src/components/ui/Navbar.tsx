@@ -33,6 +33,9 @@ const Navbar: React.FC = () => {
       <Stack direction='row' justifyContent='space-between' alignItems='center'>
         <Logo />
         <Stack gap={2} direction='row' alignItems='center'>
+          <Button variant='text' LinkComponent={Link} href='/posts'>
+            Les posts
+          </Button>
           {session?.user ? (
             <>
               <Box position='relative'>
@@ -78,14 +81,16 @@ const Navbar: React.FC = () => {
               </Box>
             </>
           ) : (
-            <Button
-              LinkComponent={Link}
-              href='/api/auth/signin'
-              variant='contained'
-              size='large'
-            >
-              Se connecter
-            </Button>
+            <>
+              <Button
+                LinkComponent={Link}
+                href='/api/auth/signin'
+                variant='contained'
+                size='large'
+              >
+                Se connecter
+              </Button>
+            </>
           )}
         </Stack>
       </Stack>

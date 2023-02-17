@@ -123,112 +123,118 @@ const Card: React.FC<CardProps> = ({
 
   return (
     <MuiCard>
-      <CardContent>
-        <Stack
-          direction='row'
-          gap={1}
-          alignItems='center'
-          justifyContent='space-between'
-        >
-          {session?.user.id !== authorId ? (
-            <>
-              <Stack direction='row' alignItems='center' gap={1}>
-                <Rating
-                  disabled={!session}
-                  precision={0.5}
-                  value={rating}
-                  onChange={handleRate}
-                />
-                {average && (
-                  <Typography variant='caption'>{average}</Typography>
+      {deleted ? (
+        "supprimé!"
+      ) : (
+        <>
+          <CardContent>
+            <Stack
+              direction='row'
+              gap={1}
+              alignItems='center'
+              justifyContent='space-between'
+            >
+              {session?.user.id !== authorId ? (
+                <>
+                  <Stack direction='row' alignItems='center' gap={1}>
+                    <Rating
+                      disabled={!session}
+                      precision={0.5}
+                      value={rating}
+                      onChange={handleRate}
+                    />
+                    {average && (
+                      <Typography variant='caption'>{average}</Typography>
+                    )}
+                  </Stack>
+                  <Checkbox
+                    disabled={!session}
+                    icon={<BookmarkBorder />}
+                    checkedIcon={<Bookmark />}
+                    checked={saved}
+                    onChange={handleSave}
+                  />
+                </>
+              ) : (
+                deleteButton && (
+                  <>
+                    <IconButton onClick={() => toggleDialogOpen(true)}>
+                      <DeleteForever />
+                    </IconButton>
+                    <Dialog
+                      open={isDialogOpen}
+                      onClose={() => toggleDialogOpen(false)}
+                    >
+                      <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
+                      <DialogContent>
+                        <DialogContentText>
+                          Cela causera une suppression irréversible du post!
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Stack gap={2} direction='row'>
+                          <Button
+                            variant='outlined'
+                            onClick={() => toggleDialogOpen(false)}
+                          >
+                            Non! Annule!
+                          </Button>
+                          <Button variant='contained' onClick={handleDelete}>
+                            Je confirme!
+                          </Button>
+                        </Stack>
+                      </DialogActions>
+                    </Dialog>
+                    {snackbar.open && <Snackbar onClose={snackbar.close} />}
+                  </>
+                )
+              )}
+            </Stack>
+
+            <Typography mb={2} variant='h5' component='p' fontWeight={700}>
+              {title}
+            </Typography>
+            <Typography>{description}</Typography>
+            {readMore && (
+              <Button
+                variant='text'
+                size='small'
+                LinkComponent={Link}
+                href={`/posts/${postId}`}
+              >
+                voir plus
+              </Button>
+            )}
+          </CardContent>
+          <CardActions>
+            {authorImage && (
+              <Stack direction='row' alignItems='center' gap={2}>
+                <Tooltip title={authorName} placement='top'>
+                  <Link
+                    href={`/profile/${
+                      session?.user.id === authorId ? "me" : authorId
+                    }`}
+                  >
+                    <Stack direction='row' alignItems='center' gap={2}>
+                      <Avatar
+                        sx={{ width: 24, height: 24 }}
+                        src={authorImage}
+                        alt='Auteur du post'
+                      />
+                      <Typography>{authorName}</Typography>
+                    </Stack>
+                  </Link>
+                </Tooltip>
+                {date && (
+                  <Typography variant='caption'>
+                    • Posté il y a {dateDistance(date)}
+                  </Typography>
                 )}
               </Stack>
-              <Checkbox
-                disabled={!session}
-                icon={<BookmarkBorder />}
-                checkedIcon={<Bookmark />}
-                checked={saved}
-                onChange={handleSave}
-              />
-            </>
-          ) : (
-            deleteButton && (
-              <>
-                <IconButton onClick={() => toggleDialogOpen(true)}>
-                  <DeleteForever />
-                </IconButton>
-                <Dialog
-                  open={isDialogOpen}
-                  onClose={() => toggleDialogOpen(false)}
-                >
-                  <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>
-                      Cela causera une suppression irréversible du post!
-                    </DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Stack gap={2} direction='row'>
-                      <Button
-                        variant='outlined'
-                        onClick={() => toggleDialogOpen(false)}
-                      >
-                        Non! Annule!
-                      </Button>
-                      <Button variant='contained' onClick={handleDelete}>
-                        Je confirme!
-                      </Button>
-                    </Stack>
-                  </DialogActions>
-                </Dialog>
-                {snackbar.open && <Snackbar onClose={snackbar.close} />}
-              </>
-            )
-          )}
-        </Stack>
-
-        <Typography mb={2} variant='h5' component='p' fontWeight={700}>
-          {title}
-        </Typography>
-        <Typography>{description}</Typography>
-        {readMore && (
-          <Button
-            variant='text'
-            size='small'
-            LinkComponent={Link}
-            href={`/posts/${postId}`}
-          >
-            voir plus
-          </Button>
-        )}
-      </CardContent>
-      <CardActions>
-        {authorImage && (
-          <Stack direction='row' alignItems='center' gap={2}>
-            <Tooltip title={authorName} placement='top'>
-              <Link
-                href={`/profile/${
-                  session?.user.id === authorId ? "me" : authorId
-                }`}
-              >
-                <Stack direction='row' alignItems='center' gap={2}>
-                  <Avatar
-                    sx={{ width: 24, height: 24 }}
-                    src={authorImage}
-                    alt='Auteur du post'
-                  />
-                  <Typography>{authorName}</Typography>
-                </Stack>
-              </Link>
-            </Tooltip>
-            {date && (
-              <Typography variant='caption'>
-                • Posté il y a {dateDistance(date)}
-              </Typography>
             )}
-          </Stack>
-        )}
-      </CardActions>
+          </CardActions>
+        </>
+      )}
     </MuiCard>
   );
 };
