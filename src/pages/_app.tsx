@@ -3,6 +3,7 @@ import Overlay from "@/components/ui/Overlay";
 import theme from "@/lib/mui/theme";
 import { trpc } from "@/utils/trpc";
 import { ThemeProvider } from "@mui/material";
+import { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps, AppType } from "next/app";
 import React from "react";
@@ -17,16 +18,24 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
+};
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout;
+};
+
 const App: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
-}: AppProps) => {
+}: AppPropsWithLayout) => {
+  const getLayout = Component.getLayout ?? (page => page);
+
   return (
     <ThemeProvider theme={theme}>
       <SessionProvider session={session}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <Layout>{getLayout(<Component {...pageProps} />)}</Layout>
       </SessionProvider>
     </ThemeProvider>
   );

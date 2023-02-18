@@ -1,6 +1,3 @@
-import Card from "@/components/Card";
-import CardList from "@/components/ui/CardList";
-import MyPosts from "@/components/ui/MyPosts";
 import useSettingsStore from "@/store/settings";
 import { trpc } from "@/utils/trpc";
 import {
@@ -21,48 +18,51 @@ import {
   Typography,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import React, { ReactElement, useState } from "react";
 
 interface TabProps {
   value: string;
   label: string;
-  component: React.ReactNode;
   icon: React.ReactNode;
+  href: string;
 }
 
 const tabs = [
   {
     label: "Mes posts",
-    component: <MyPosts />,
     value: "myPosts",
     icon: <Description />,
+    href: "/profile",
   } as const,
   {
     label: "Stats",
-    component: <></>,
     value: "stats",
     icon: <BarChart />,
+    href: "/profile/stats",
   } as const,
   {
     label: "Sauvegardés",
-    component: <></>,
     value: "savedPosts",
     icon: <Bookmark />,
+    href: "/profile/saved",
   } as const,
   {
     label: "Amis",
-    component: <></>,
     value: "friends",
     icon: <PeopleAlt />,
+    href: "/profile/friends",
   } as const,
 ] satisfies TabProps[];
 
 type TabsValues = (typeof tabs)[number]["value"];
 
-const Me: React.FC = () => {
+const Me: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { data: session } = useSession();
   const { data, isLoading, isError } = trpc.posts.personalInfos.useQuery();
-  const [selectedTab, setSelectedTab] = useState<TabsValues>("myPosts");
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState(router.pathname);
 
   const settings = useSettingsStore();
 
@@ -93,13 +93,20 @@ const Me: React.FC = () => {
           )}
         </Box>
       </Stack>
-      <Tabs value={selectedTab} onChange={handleChange} selectionFollowsFocus>
+      <Tabs
+        value={selectedTab}
+        onChange={handleChange}
+        selectionFollowsFocus
+        sx={{ mb: 2 }}
+      >
         {tabs.map(tab => (
           <Tab
             label={tab.label}
-            value={tab.value}
+            value={tab.href}
             icon={tab.icon}
             iconPosition='start'
+            LinkComponent={Link}
+            href={tab.href}
             sx={{
               transition: "text-shadow .2s",
               "&:hover": {
@@ -112,33 +119,11 @@ const Me: React.FC = () => {
         ))}
       </Tabs>
 
-      <FormControlLabel
-        label='Masquer les posts supprimés'
-        control={
-          <Switch
-            value={settings.maskDeleted}
-            onChange={() => settings.toggleMaskDeleted()}
-          />
-        }
-      />
-
-      {data && (
-        <CardList data={data?.posts} mt={4}>
-          {post => (
-            <Card
-              title={post.title}
-              description={post.description}
-              postId={post.id}
-              authorId={post.authorId}
-              deleteButton
-              deleted={post.deleted}
-              date={post.createdAt}
-            />
-          )}
-        </CardList>
-      )}
+      {children}
     </Container>
   );
 };
+
+export const getProfileLayout = (page: ReactElement) => <Me>{page}</Me>;
 
 export default Me;

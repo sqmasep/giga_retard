@@ -122,9 +122,31 @@ const Card: React.FC<CardProps> = ({
   };
 
   return (
-    <MuiCard>
+    <MuiCard sx={deleted ? { backgroundColor: "#1114" } : undefined}>
       {deleted ? (
-        "supprimé!"
+        <CardContent sx={{ position: "relative" }}>
+          <Stack gap={1} direction='column'></Stack>
+          <Typography variant='h5' component='p' aria-hidden='true'>
+            Some fake title.. :)
+          </Typography>
+          <Typography aria-hidden='true'>
+            Une petite description un peu random car il faut bien faire genre
+            que c'était une publication mais supprimée
+          </Typography>
+          <Stack
+            sx={{
+              position: "absolute",
+              inset: 0,
+              backdropFilter: "blur(5px)",
+            }}
+            alignItems='center'
+            justifyContent='center'
+          >
+            <Typography variant='h4' component='p'>
+              Post supprimé
+            </Typography>
+          </Stack>
+        </CardContent>
       ) : (
         <>
           <CardContent>
@@ -158,7 +180,10 @@ const Card: React.FC<CardProps> = ({
               ) : (
                 deleteButton && (
                   <>
-                    <IconButton onClick={() => toggleDialogOpen(true)}>
+                    <IconButton
+                      sx={{ marginLeft: "auto" }}
+                      onClick={() => toggleDialogOpen(true)}
+                    >
                       <DeleteForever />
                     </IconButton>
                     <Dialog
@@ -205,10 +230,8 @@ const Card: React.FC<CardProps> = ({
                 voir plus
               </Button>
             )}
-          </CardContent>
-          <CardActions>
-            {authorImage && (
-              <Stack direction='row' alignItems='center' gap={2}>
+            <Stack mt={4} direction='row' alignItems='center' gap={2}>
+              {authorImage && (
                 <Tooltip title={authorName} placement='top'>
                   <Link
                     href={`/profile/${
@@ -225,14 +248,17 @@ const Card: React.FC<CardProps> = ({
                     </Stack>
                   </Link>
                 </Tooltip>
-                {date && (
-                  <Typography variant='caption'>
-                    • Posté il y a {dateDistance(date)}
-                  </Typography>
-                )}
-              </Stack>
-            )}
-          </CardActions>
+              )}
+              {date && (
+                <Typography variant='caption'>
+                  {(authorImage || authorName) && "•"} Posté il y a{" "}
+                  {dateDistance(date)}
+                </Typography>
+              )}
+            </Stack>
+          </CardContent>
+          {/* <CardActions> */}
+          {/* </CardActions> */}
         </>
       )}
     </MuiCard>

@@ -101,6 +101,7 @@ theme = createTheme(theme, {
       styleOverrides: {
         root: {
           padding: theme.spacing(1),
+          paddingBottom: 0,
           outline: theme.styling.outline,
           boxShadow: theme.styling.shadow,
           transition: ".2s",
