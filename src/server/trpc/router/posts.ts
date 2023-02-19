@@ -149,9 +149,19 @@ export const postsRouter = router({
     return await ctx.prisma.savedPost.findMany({
       where: {
         userId: ctx.session.user.id,
+        saved: true,
       },
       include: {
-        Post: true,
+        Post: {
+          include: {
+            author: true,
+            ratedPost: {
+              where: {
+                userId: ctx.session.user.id,
+              },
+            },
+          },
+        },
       },
     });
   }),

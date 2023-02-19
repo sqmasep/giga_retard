@@ -93,12 +93,7 @@ const Me: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           )}
         </Box>
       </Stack>
-      <Tabs
-        value={selectedTab}
-        onChange={handleChange}
-        selectionFollowsFocus
-        sx={{ mb: 2 }}
-      >
+      <Tabs value={selectedTab} onChange={handleChange} sx={{ mb: 2 }}>
         {tabs.map(tab => (
           <Tab
             label={tab.label}
