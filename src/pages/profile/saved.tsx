@@ -1,9 +1,8 @@
 import Loading from "@/components/Loading";
-import { getProfileLayout } from "@/components/ui/ProfileLayout";
+import { getPrivateProfileLayout } from "@/components/ui/ProfileLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 import { trpc } from "@/utils/trpc";
 import { Typography } from "@mui/material";
-import React from "react";
 import Card from "../../components/Card";
 import CardList from "../../components/ui/CardList";
 
@@ -38,6 +37,6 @@ const SavedPosts: NextPageWithLayout = () => {
   );
 };
 
-SavedPosts.getLayout = getProfileLayout;
+SavedPosts.getLayout = getPrivateProfileLayout;
 
 export default SavedPosts;

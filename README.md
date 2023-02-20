@@ -20,7 +20,7 @@ J'ai trouvé la soluce quelques jours après le début, j'ai pû reprendre le de
 - Typescript
 - MUI5
 - Framer Motion
-- (zustand?)
+- zustand
 
 - tRPC
 - zod

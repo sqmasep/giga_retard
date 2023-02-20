@@ -1,12 +1,12 @@
 import Card from "@/components/Card";
 import CardList from "@/components/ui/CardList";
-import { getProfileLayout } from "@/components/ui/ProfileLayout";
+import { getPrivateProfileLayout } from "@/components/ui/ProfileLayout";
 import useSettingsStore from "@/store/settings";
 import { trpc } from "@/utils/trpc";
 import { FormControlLabel, Switch } from "@mui/material";
 import { NextPageWithLayout } from "../_app";
 
-const Posts: NextPageWithLayout = () => {
+const Profile: NextPageWithLayout = () => {
   const { data, isLoading, isError } = trpc.posts.personalInfos.useQuery();
   const settings = useSettingsStore();
 
@@ -41,6 +41,6 @@ const Posts: NextPageWithLayout = () => {
   );
 };
 
-Posts.getLayout = getProfileLayout;
+Profile.getLayout = getPrivateProfileLayout;
 
-export default Posts;
+export default Profile;

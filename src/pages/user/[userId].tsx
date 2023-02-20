@@ -5,21 +5,21 @@ import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useSession } from "next-auth/react";
 import { NextPageWithLayout } from "../_app";
-import { getProfileLayout } from "@/components/ui/ProfileLayout";
+import { getPublicProfileLayout } from "@/components/ui/ProfileLayout";
 
 const Profile: NextPageWithLayout = () => {
   const { data: session } = useSession();
   const { query } = useRouter();
   const { data, isError, error } = trpc.posts.byProfileId.useQuery(
-    { id: query.profileId as string },
-    { enabled: !!query.profileId }
+    { id: query.userId as string },
+    { enabled: !!query.userId }
   );
 
   if (isError) return <pre>{JSON.stringify(error, null, 2)}</pre>;
 
-  return <>ui</>;
+  return <>public user infos... [userId.tsx]</>;
 };
 
-Profile.getLayout = getProfileLayout;
+Profile.getLayout = getPublicProfileLayout;
 
 export default Profile;
