@@ -13,14 +13,19 @@ const StyledList = styled(List)(({ theme }) => ({
   boxShadow: theme.styling.shadow,
 }));
 
-const Dropdown: React.FC<
+const Dropdown = React.forwardRef<
+  HTMLUListElement,
   DropdownProps & React.ComponentProps<typeof StyledList>
-> = ({ children, open, ...props }) => {
+>(({ children, open, ...props }, ref) => {
   return (
     <AnimatePresence>
-      {open && <StyledList {...props}>{children}</StyledList>}
+      {open && (
+        <StyledList ref={ref} {...props}>
+          {children}
+        </StyledList>
+      )}
     </AnimatePresence>
   );
-};
+});
 
 export default Dropdown;

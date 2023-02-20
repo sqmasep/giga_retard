@@ -20,13 +20,12 @@ const PublicProfile: React.FC<{
   );
 
   useEffect(() => {
-    console.log(session?.user.id);
     if (session && session.user.id === userId) router.push("/profile");
   }, [session, userId]);
 
   return (
     <>
-      <ProfileHeader nbPosts={2} userImage={""} userName={""} />
+      <ProfileHeader nbPosts={2} userId={userId} userImage={""} userName={""} />
       {children}
       <p>{userId}</p>
     </>

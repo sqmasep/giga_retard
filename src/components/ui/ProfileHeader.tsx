@@ -1,11 +1,17 @@
+import { trpc } from "@/utils/trpc";
 import { Avatar, Box, Stack, Typography } from "@mui/material";
+import { useSession } from "next-auth/react";
 import React from "react";
 
 const ProfileHeader: React.FC<{
+  userId: string;
   userImage: string;
   userName: string;
   nbPosts: number | undefined | null;
-}> = ({ userImage, userName, nbPosts }) => {
+}> = ({ userId, userImage, userName, nbPosts }) => {
+  const { data: session } = useSession();
+  const { data } = trpc.posts.byProfileId.useQuery({ userId });
+
   return (
     <Stack my={8} direction='row' alignItems='center' gap={8}>
       <Avatar

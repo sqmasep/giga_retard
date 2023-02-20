@@ -116,16 +116,17 @@ export const postsRouter = router({
         },
         include: {
           author: true,
+          Comment: true,
         },
       });
     }),
 
   byProfileId: publicProcedure
-    .input(z.object({ id: z.string().uuid() }))
+    .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.post.findMany({
         where: {
-          authorId: input.id,
+          authorId: input.userId,
         },
         include: {
           author: true,

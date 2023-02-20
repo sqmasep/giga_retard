@@ -29,6 +29,8 @@ const New: React.FC = () => {
     helpers: FormikHelpers<NewPost>
   ) => {
     newMutation.mutate({ title, description });
+
+    // FIXME: working the 2nd time
     newMutation.isSuccess && helpers.resetForm();
 
     toggleSnackbar(true);
