@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { ReactElement, useState } from "react";
+import { z } from "zod";
 
 interface TabProps {
   value: string;
@@ -58,13 +59,42 @@ const tabs = [
 
 type TabsValues = (typeof tabs)[number]["value"];
 
-const Me: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { data: session } = useSession();
-  const { data, isLoading, isError } = trpc.posts.personalInfos.useQuery();
+const ProfileHeader: React.FC<{
+  userImage: string;
+  userName: string;
+  nbPosts: number | undefined | null;
+}> = ({ userImage, userName, nbPosts }) => {
+  return (
+    <Stack my={8} direction='row' alignItems='center' gap={8}>
+      <Avatar
+        src={userImage || undefined}
+        sx={{
+          width: 300,
+          height: 300,
+          boxShadow: theme => theme.styling.shadow,
+          outline: theme => theme.styling.outline,
+        }}
+        alt=''
+      />
+      <Box>
+        <Typography variant='h1'>{userName}</Typography>
+        {nbPosts && (
+          <Typography>
+            {nbPosts} post{nbPosts > 1 && "s"}
+          </Typography>
+        )}
+      </Box>
+    </Stack>
+  );
+};
+
+const PersonalInfos: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const router = useRouter();
   const [selectedTab, setSelectedTab] = useState(router.pathname);
-
-  const settings = useSettingsStore();
+  const { data } = trpc.posts.personalInfos.useQuery();
+  const { data: session } = useSession();
 
   const handleChange = (
     e: React.SyntheticEvent<Element, Event>,
@@ -72,30 +102,17 @@ const Me: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   ) => setSelectedTab(value);
 
   return (
-    <Container>
-      <Stack my={8} direction='row' alignItems='center' gap={8}>
-        <Avatar
-          src={session?.user.image || undefined}
-          sx={{
-            width: 300,
-            height: 300,
-            boxShadow: theme => theme.styling.shadow,
-            outline: theme => theme.styling.outline,
-          }}
-          alt=''
-        />
-        <Box>
-          <Typography variant='h1'>{session?.user.name}</Typography>
-          {data?.posts && (
-            <Typography>
-              {data.posts.length} post{data.posts.length > 1 && "s"}
-            </Typography>
-          )}
-        </Box>
-      </Stack>
+    <>
+      <ProfileHeader
+        nbPosts={1}
+        userImage={session?.user.image || ""}
+        userName={session?.user.name || ""}
+      />
+      c mon profil ça!
       <Tabs value={selectedTab} onChange={handleChange} sx={{ mb: 2 }}>
         {tabs.map(tab => (
           <Tab
+            key={tab.href}
             label={tab.label}
             value={tab.href}
             icon={tab.icon}
@@ -113,12 +130,42 @@ const Me: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           />
         ))}
       </Tabs>
-
       {children}
-    </Container>
+    </>
   );
 };
 
-export const getProfileLayout = (page: ReactElement) => <Me>{page}</Me>;
+const PublicInfos: React.FC<{ userId: string }> = ({ userId }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { data } = trpc.posts.byProfileId.useQuery({
+    id: userId,
+  });
 
-export default Me;
+  if (session?.user.id === userId) router.push("/profile");
+
+  return (
+    <>
+      <ProfileHeader nbPosts={2} userImage={""} userName={""} />
+      public profile!
+    </>
+  );
+};
+
+const ProfileLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { query } = useRouter();
+  const uuidSchema = z.string().uuid();
+  const res = uuidSchema.safeParse(query.profileId);
+
+  if (!res.success) return <PersonalInfos>{children}</PersonalInfos>;
+
+  return <PublicInfos userId={query.profileId as string} />;
+};
+
+export const getProfileLayout = (page: ReactElement) => (
+  <ProfileLayout>{page}</ProfileLayout>
+);
+
+export default ProfileLayout;

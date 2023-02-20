@@ -1,5 +1,5 @@
 import Loading from "@/components/Loading";
-import Me, { getProfileLayout } from "@/components/ui/ProfileLayout";
+import { getProfileLayout } from "@/components/ui/ProfileLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 import { trpc } from "@/utils/trpc";
 import { Typography } from "@mui/material";
@@ -18,6 +18,7 @@ const SavedPosts: NextPageWithLayout = () => {
         <CardList data={data}>
           {({ postId, saved, Post }) => (
             <Card
+              key={postId}
               postId={postId}
               defaultSaved={saved}
               authorImage={Post.author.image}
@@ -26,7 +27,7 @@ const SavedPosts: NextPageWithLayout = () => {
               title={Post.title}
               description={Post.description}
               readMore
-              defaultRating={Post.ratedPost[0].rating}
+              defaultRating={Post.ratedPost[0]?.rating}
             />
           )}
         </CardList>

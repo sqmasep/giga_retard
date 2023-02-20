@@ -6,11 +6,16 @@ import { ThemeProvider } from "@mui/material";
 import { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps, AppType } from "next/app";
+import Head from "next/head";
 import React from "react";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <>
+      <Head>
+        <link rel='shortcut icon' href='/favicon.ico' type='image/x-icon' />
+        <title>giga-retard</title>
+      </Head>
       <Navbar />
       {children}
       <Overlay />
