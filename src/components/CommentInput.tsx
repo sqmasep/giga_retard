@@ -11,9 +11,12 @@ type Values = z.infer<typeof newCommentSchema>;
 
 const CommentInput: React.FC<{ postId: string }> = ({ postId }) => {
   const snackbar = useSnackbar();
+  const utils = trpc.useContext();
 
   const commentMutation = trpc.comments.new.useMutation({
-    onSuccess: () => {},
+    onSuccess: () => {
+      utils.posts.byPostId.invalidate({ postId });
+    },
   });
 
   const handleSubmit = (values: Values, helpers: FormikHelpers<Values>) => {

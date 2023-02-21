@@ -116,7 +116,11 @@ export const postsRouter = router({
         },
         include: {
           author: true,
-          Comment: true,
+          Comment: {
+            include: {
+              user: true,
+            },
+          },
         },
       });
     }),

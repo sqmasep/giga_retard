@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
           {session?.user ? (
             <>
               <Box position='relative'>
-                <ButtonBase onClick={() => console.log("wow")}>
+                <ButtonBase onClick={() => toggleUserDropdown()}>
                   <AvatarChip
                     image={session.user.image || ""}
                     name={session.user.name || ""}
@@ -47,7 +47,8 @@ const Navbar: React.FC = () => {
                 </ButtonBase>
 
                 <ClickAwayListener
-                  onClickAway={() => toggleUserDropdown(false)}
+                  // onClickAway={() => toggleUserDropdown(false)}
+                  onClickAway={() => {}}
                 >
                   <Dropdown
                     open={userDropdown}
@@ -60,7 +61,7 @@ const Navbar: React.FC = () => {
                     }}
                   >
                     <ListItem disablePadding>
-                      <ListItemButton LinkComponent={Link} href='/profile/me'>
+                      <ListItemButton LinkComponent={Link} href='/profile'>
                         <ListItemIcon>
                           <AccountCircle />
                         </ListItemIcon>

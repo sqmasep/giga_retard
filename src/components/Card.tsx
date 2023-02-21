@@ -23,9 +23,10 @@ import {
   ButtonBase,
   styled,
   Snackbar,
+  Link,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import NextLink from "next/link";
 import React, { useState } from "react";
 
 interface CardProps {
@@ -224,19 +225,22 @@ const Card: React.FC<CardProps> = ({
               <Button
                 variant='text'
                 size='small'
-                LinkComponent={Link}
+                LinkComponent={NextLink}
                 href={`/posts/${postId}`}
               >
-                voir plus
+                Voir plus
               </Button>
             )}
             <Stack mt={4} direction='row' alignItems='center' gap={2}>
               {authorImage && (
                 <Tooltip title={authorName} placement='top'>
                   <Link
-                    href={`/profile/${
-                      session?.user.id === authorId ? "me" : authorId
-                    }`}
+                    component={NextLink}
+                    href={
+                      session?.user.id === authorId
+                        ? "/profile"
+                        : `/user/${authorId}`
+                    }
                   >
                     <Stack direction='row' alignItems='center' gap={2}>
                       <Avatar
@@ -250,7 +254,7 @@ const Card: React.FC<CardProps> = ({
                 </Tooltip>
               )}
               {date && (
-                <Typography variant='caption'>
+                <Typography variant='caption' color='gray'>
                   {(authorImage || authorName) && "•"} Posté il y a{" "}
                   {dateDistance(date)}
                 </Typography>

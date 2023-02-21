@@ -111,6 +111,7 @@ model Comment {
   user               User                 @relation(fields: [userId], references: [id])
   userId             String
   comment            String               @db.Text
+  createdAt          DateTime             @default(now())
   CommentInteraction CommentInteraction[]
 }
 
