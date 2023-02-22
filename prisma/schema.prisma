@@ -116,12 +116,14 @@ model Comment {
 }
 
 model CommentInteraction {
-  id          String      @id @default(uuid())
-  comment     Comment     @relation(fields: [commentId], references: [id])
-  commentId   String
-  user        User        @relation(fields: [userId], references: [id])
-  userId      String
-  interaction Interaction
+  id          String       @id @default(uuid())
+  comment     Comment?     @relation(fields: [commentId], references: [id])
+  commentId   String?
+  user        User?        @relation(fields: [userId], references: [id])
+  userId      String?
+  interaction Interaction?
+
+  @@unique([commentId, userId])
 }
 
 model Notification {
@@ -143,7 +145,7 @@ enum NotifSeverity {
 }
 
 enum Interaction {
-  LIKED
+  LIKE
   DISLIKE
 }
 

@@ -122,7 +122,11 @@ theme = createTheme(theme, {
       },
     },
     MuiLink: {
-      // styleOverrides: {},
+      styleOverrides: {
+        root: {
+          // color: theme.palette.primary.main,
+        },
+      },
       defaultProps: { underline: "hover" },
     },
     MuiSnackbarContent: {

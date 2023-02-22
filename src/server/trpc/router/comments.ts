@@ -28,4 +28,43 @@ export const commentsRouter = router({
         },
       });
     }),
+
+  interaction: requireAuthProcedure
+    .input(
+      z.object({
+        commentId: z.string().uuid(),
+        interaction: z.enum(["LIKE", "DISLIKE"]).nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input: { interaction, commentId } }) => {
+      const userId = ctx.session.user.id;
+
+      if (interaction === null) {
+        return await ctx.prisma.commentInteraction.delete({
+          where: {
+            commentId_userId: {
+              commentId,
+              userId,
+            },
+          },
+        });
+      }
+
+      return await ctx.prisma.commentInteraction.upsert({
+        create: {
+          interaction,
+          userId,
+          commentId,
+        },
+        update: {
+          interaction,
+        },
+        where: {
+          commentId_userId: {
+            commentId,
+            userId,
+          },
+        },
+      });
+    }),
 });

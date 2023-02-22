@@ -19,20 +19,22 @@ const PostPage: React.FC = () => {
 
   return (
     <Container>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       {/* FIXME: query && query.postId but cleaner */}
       {/* ^ am i sure of that? data is already enabled when query.postId */}
       {data?.Comment.length &&
         data.Comment.map(comment => (
-          <>
-            <Comment
-              comment={comment.comment}
-              userId={comment.userId}
-              userImage={comment.user.image || ""}
-              userName={comment.user.name || ""}
-              date={comment.createdAt}
-            />
-          </>
+          <Comment
+            key={comment.id}
+            commentId={comment.id}
+            comment={comment.comment}
+            userId={comment.userId}
+            userImage={comment.user.image || ""}
+            userName={comment.user.name || ""}
+            date={comment.createdAt}
+            deleteButton
+            reportButton
+          />
         ))}
       {query.postId && session && session.user.id !== data?.authorId && (
         <>

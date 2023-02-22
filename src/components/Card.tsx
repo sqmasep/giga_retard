@@ -28,6 +28,7 @@ import {
 import { useSession } from "next-auth/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
+import NamedAvatar from "./NamedAvatar";
 
 interface CardProps {
   postId: string;
@@ -231,8 +232,8 @@ const Card: React.FC<CardProps> = ({
                 Voir plus
               </Button>
             )}
-            <Stack mt={4} direction='row' alignItems='center' gap={2}>
-              {authorImage && (
+            <Stack mt={4} direction='row' alignItems='center' gap={1}>
+              {authorImage && authorName && (
                 <Tooltip title={authorName} placement='top'>
                   <Link
                     component={NextLink}
@@ -242,20 +243,18 @@ const Card: React.FC<CardProps> = ({
                         : `/user/${authorId}`
                     }
                   >
-                    <Stack direction='row' alignItems='center' gap={2}>
-                      <Avatar
-                        sx={{ width: 24, height: 24 }}
-                        src={authorImage}
-                        alt='Auteur du post'
-                      />
-                      <Typography>{authorName}</Typography>
-                    </Stack>
+                    <NamedAvatar
+                      size={24}
+                      userImage={authorImage}
+                      alt='Auteur du post'
+                      userName={authorName}
+                    />
                   </Link>
                 </Tooltip>
               )}
               {date && (
                 <Typography variant='caption' color='gray'>
-                  {(authorImage || authorName) && "•"} Posté il y a{" "}
+                  {(authorImage || authorName) && "•"} Il y a{" "}
                   {dateDistance(date)}
                 </Typography>
               )}
