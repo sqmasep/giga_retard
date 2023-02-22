@@ -1,7 +1,8 @@
 import useSnackbar from "@/hooks/useSnackbar";
 import { newCommentSchema } from "@/server/trpc/router/validation/comment";
 import { trpc } from "@/utils/trpc";
-import { TextField } from "@mui/material";
+import { Send } from "@mui/icons-material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { Field, Form, Formik, FormikHelpers } from "formik";
 import React from "react";
 import { z } from "zod";
@@ -33,7 +34,21 @@ const CommentInput: React.FC<{ postId: string }> = ({ postId }) => {
       onSubmit={handleSubmit}
     >
       <Form>
-        <Field as={TextField} placeholder='test' name='comment' fullWidth />
+        <Field
+          as={TextField}
+          placeholder='Commentez!'
+          name='comment'
+          fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position='end'>
+                <IconButton>
+                  <Send />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
       </Form>
     </Formik>
   );

@@ -35,6 +35,8 @@ interface Comment {
   reportButton?: boolean;
   defaultLike?: boolean;
   defaultDislike?: boolean;
+  nbLike?: number;
+  nbDislike?: number;
 }
 
 const Comment: React.FC<Comment> = ({
@@ -48,6 +50,8 @@ const Comment: React.FC<Comment> = ({
   reportButton = false,
   defaultLike = false,
   defaultDislike = false,
+  nbLike,
+  nbDislike,
 }) => {
   const { data: session } = useSession();
   const isAuthor = session?.user.id === userId;
@@ -69,18 +73,22 @@ const Comment: React.FC<Comment> = ({
   });
 
   const handleDelete = () => {
+    // FIXME: need confirm obviously
     deleteMutation.mutate({ commentId });
   };
+
   const handleReport = () => {};
 
   return (
-    <Paper elevation={2} sx={{ p: 4 }}>
-      <Stack direction='column' gap={1} alignItems='start'>
+    <Paper elevation={2} sx={{ p: 3 }}>
+      <Stack gap={2} alignItems='start'>
         <Stack direction='row' gap={1} alignItems='center' justifyContent='end'>
           {deleteButton && session?.user.id === userId && (
-            <IconButton size='small' onClick={handleDelete}>
-              <Delete />
-            </IconButton>
+            <Tooltip title='Supprimer' placement='top'>
+              <IconButton size='small' onClick={handleDelete}>
+                <Delete />
+              </IconButton>
+            </Tooltip>
           )}
           {reportButton && !isAuthor && (
             <Tooltip title='Signaler' placement='top'>
@@ -92,29 +100,42 @@ const Comment: React.FC<Comment> = ({
         </Stack>
         <Typography>{comment}</Typography>
 
-        {/* FIXME: hey! you shouldnt be able to like & dislike at the same time */}
-        <IconButton color='primary' onClick={() => balance("LIKE")}>
-          {like ? <ThumbUp /> : <ThumbUpOffAlt />}
-        </IconButton>
-        <IconButton onClick={() => balance("DISLIKE")}>
-          {dislike ? <ThumbDown /> : <ThumbDownOffAlt />}
-        </IconButton>
-        <Link
-          component={NextLink}
-          href={isAuthor ? "/profile" : `/user/${userId}`}
-        >
-          <Stack direction='row' alignItems='center' gap={1}>
+        <Stack direction='row' gap={1}>
+          <Stack alignItems='center' direction='row'>
+            <IconButton
+              disabled={isAuthor}
+              color='primary'
+              onClick={() => balance("LIKE")}
+            >
+              {like ? <ThumbUp /> : <ThumbUpOffAlt />}
+            </IconButton>
+            <Typography variant='caption'>{nbLike ?? 0}</Typography>
+          </Stack>
+
+          <Stack alignItems='center' direction='row'>
+            <IconButton disabled={isAuthor} onClick={() => balance("DISLIKE")}>
+              {dislike ? <ThumbDown /> : <ThumbDownOffAlt />}
+            </IconButton>
+            <Typography variant='caption'>{nbDislike ?? 0}</Typography>
+          </Stack>
+        </Stack>
+
+        <Stack direction='row' alignItems='center' gap={1}>
+          <Link
+            component={NextLink}
+            href={isAuthor ? "/profile" : `/user/${userId}`}
+          >
             <NamedAvatar
               alt='Auteur du commentaire'
               userImage={userImage}
               userName={userName}
               size={30}
             />
-          </Stack>
-        </Link>
-        <Typography variant='caption' color='gray'>
-          Il y a {dateDistance(date)}
-        </Typography>
+          </Link>
+          <Typography variant='caption' color='gray'>
+            • Il y a {dateDistance(date)}
+          </Typography>
+        </Stack>
       </Stack>
     </Paper>
   );

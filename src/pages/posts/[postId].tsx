@@ -1,8 +1,9 @@
+import Card from "@/components/Card";
 import Comment from "@/components/Comment";
 import CommentInput from "@/components/CommentInput";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
-import { Container, Typography } from "@mui/material";
+import { Container, Stack, Typography } from "@mui/material";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import React from "react";
@@ -18,32 +19,51 @@ const PostPage: React.FC = () => {
   );
 
   return (
-    <Container>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
-      {/* FIXME: query && query.postId but cleaner */}
-      {/* ^ am i sure of that? data is already enabled when query.postId */}
-      {data?.Comment.length &&
-        data.Comment.map(comment => (
-          <Comment
-            key={comment.id}
-            commentId={comment.id}
-            comment={comment.comment}
-            userId={comment.userId}
-            userImage={comment.user.image || ""}
-            userName={comment.user.name || ""}
-            date={comment.createdAt}
-            deleteButton
-            reportButton
-          />
-        ))}
-      {query.postId && session && session.user.id !== data?.authorId && (
-        <>
-          {!data?.Comment.length && (
-            <Typography>Soyez le premier à commenter ce post!</Typography>
-          )}
-          <CommentInput postId={query.postId as string} />
-        </>
-      )}
+    <Container maxWidth='md'>
+      <Stack gap={4}>
+        <Card
+          postId={query.postId as string}
+          authorId={data?.authorId}
+          authorImage={data?.author.image}
+          authorName={data?.author.name}
+          title={data?.title}
+          description={data?.description}
+        />
+        {/* FIXME: query && query.postId but cleaner */}
+        {/* ^ am i sure of that? data is already enabled when query.postId */}
+        {data?.Comment.length && (
+          <Stack gap={2}>
+            {data.Comment.map(comment => (
+              <Comment
+                key={comment.id}
+                commentId={comment.id}
+                comment={comment.comment}
+                userId={comment.userId}
+                userImage={comment.user.image || ""}
+                userName={comment.user.name || ""}
+                date={comment.createdAt}
+                deleteButton
+                reportButton
+                defaultDislike={
+                  comment.CommentInteraction[0]?.interaction === "DISLIKE"
+                }
+                defaultLike={
+                  comment.CommentInteraction[0]?.interaction === "LIKE"
+                }
+              />
+            ))}
+          </Stack>
+        )}
+
+        {query.postId && session && session.user.id !== data?.authorId && (
+          <>
+            {!data?.Comment.length && (
+              <Typography>Soyez le premier à commenter ce post!</Typography>
+            )}
+            <CommentInput postId={query.postId as string} />
+          </>
+        )}
+      </Stack>
     </Container>
   );
 };

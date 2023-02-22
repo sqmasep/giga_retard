@@ -24,6 +24,7 @@ import {
   styled,
   Snackbar,
   Link,
+  Skeleton,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import NextLink from "next/link";
@@ -127,7 +128,6 @@ const Card: React.FC<CardProps> = ({
     <MuiCard sx={deleted ? { backgroundColor: "#1114" } : undefined}>
       {deleted ? (
         <CardContent sx={{ position: "relative" }}>
-          <Stack gap={1} direction='column'></Stack>
           <Typography variant='h5' component='p' aria-hidden='true'>
             Some fake title.. :)
           </Typography>

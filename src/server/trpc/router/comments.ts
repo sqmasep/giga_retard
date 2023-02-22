@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { requireAuthProcedure } from "../middleware/auth";
-import { router } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 import { newCommentInput, newCommentSchema } from "./validation/comment";
+import { TRPCError } from "@trpc/server";
 
 export const commentsRouter = router({
   new: requireAuthProcedure
@@ -39,6 +40,16 @@ export const commentsRouter = router({
     .mutation(async ({ ctx, input: { interaction, commentId } }) => {
       const userId = ctx.session.user.id;
 
+      const author = await ctx.prisma.commentInteraction.findFirst({
+        where: { commentId },
+        select: { userId: true },
+      });
+
+      // Author cannot like his own comment
+      if (!author || userId === author.userId) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
       if (interaction === null) {
         return await ctx.prisma.commentInteraction.delete({
           where: {
@@ -67,4 +78,8 @@ export const commentsRouter = router({
         },
       });
     }),
+
+  report: publicProcedure
+    .input(z.object({ commentId: z.string().uuid() }))
+    .mutation(({ ctx, input }) => {}),
 });

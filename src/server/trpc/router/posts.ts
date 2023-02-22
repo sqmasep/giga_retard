@@ -119,6 +119,11 @@ export const postsRouter = router({
           Comment: {
             include: {
               user: true,
+              CommentInteraction: {
+                where: {
+                  userId: ctx.session?.user.id,
+                },
+              },
             },
           },
         },
