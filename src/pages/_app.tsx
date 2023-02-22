@@ -1,3 +1,5 @@
+import "@total-typescript/ts-reset"
+
 import Navbar from "@/components/ui/Navbar";
 import Overlay from "@/components/ui/Overlay";
 import theme from "@/lib/mui/theme";
