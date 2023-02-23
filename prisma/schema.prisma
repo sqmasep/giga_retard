@@ -59,6 +59,8 @@ model User {
   Comment            Comment[]
   InteractionComment CommentInteraction[]
   Notification       Notification[]
+  Friend             Friend[]             @relation("FriendRequest")
+  friendRequest      Friend[]             @relation("FriendRequestReceived")
 }
 
 model Post {
@@ -124,6 +126,16 @@ model CommentInteraction {
   interaction Interaction?
 
   @@unique([commentId, userId])
+}
+
+model Friend {
+  id       String   @id @default(uuid())
+  date     DateTime @default(now())
+  accepted Boolean  @default(false)
+  byUser   User     @relation("FriendRequest", fields: [byUserId], references: [id])
+  byUserId String
+  toUser   User     @relation("FriendRequestReceived", fields: [toUserId], references: [id])
+  toUserId String
 }
 
 model Notification {

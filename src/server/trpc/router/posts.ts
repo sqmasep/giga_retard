@@ -133,14 +133,26 @@ export const postsRouter = router({
   byProfileId: publicProcedure
     .input(z.object({ userId: z.string().uuid() }))
     .query(async ({ ctx, input }) => {
-      return await ctx.prisma.post.findMany({
+      const posts = await ctx.prisma.post.findMany({
         where: {
           authorId: input.userId,
+          deleted: false,
         },
         include: {
           author: true,
         },
       });
+
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          id: input.userId,
+        },
+      });
+
+      return {
+        posts,
+        user,
+      };
     }),
 
   personalInfos: requireAuthProcedure.query(async ({ ctx }) => {

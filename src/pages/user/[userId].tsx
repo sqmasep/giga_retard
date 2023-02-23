@@ -11,13 +11,17 @@ const Profile: NextPageWithLayout = () => {
   const { data: session } = useSession();
   const { query } = useRouter();
   const { data, isError, error } = trpc.posts.byProfileId.useQuery(
-    { id: query.userId as string },
+    { userId: query.userId as string },
     { enabled: !!query.userId }
   );
 
   if (isError) return <pre>{JSON.stringify(error, null, 2)}</pre>;
 
-  return <>public user infos... [userId.tsx]</>;
+  return (
+    <>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </>
+  );
 };
 
 Profile.getLayout = getPublicProfileLayout;

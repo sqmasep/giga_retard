@@ -12,7 +12,7 @@ const PublicProfile: React.FC<{
   const { data: session } = useSession();
   const { data } = trpc.posts.byProfileId.useQuery(
     {
-      id: userId,
+      userId,
     },
     {
       enabled: !!userId,
@@ -25,9 +25,14 @@ const PublicProfile: React.FC<{
 
   return (
     <>
-      <ProfileHeader nbPosts={2} userId={userId} userImage={""} userName={""} />
+      <ProfileHeader
+        nbPosts={data?.posts.length}
+        userId={userId}
+        // FIXME: remove the `|| ""` pls
+        userImage={data?.user?.image || ""}
+        userName={data?.user?.name || ""}
+      />
       {children}
-      <p>{userId}</p>
     </>
   );
 };

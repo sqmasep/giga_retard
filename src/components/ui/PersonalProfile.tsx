@@ -63,11 +63,15 @@ const PersonalProfile: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <>
-      <ProfileHeader
-        nbPosts={1}
-        userImage={session?.user.image || ""}
-        userName={session?.user.name || ""}
-      />
+      {session?.user && (
+        <ProfileHeader
+          nbPosts={data?.posts.length}
+          userId={session.user.id}
+          // FIXME: remove the `|| ""` pls
+          userImage={session.user.image || ""}
+          userName={session.user.name || ""}
+        />
+      )}
       <Tabs value={selectedTab} onChange={handleChange} sx={{ mb: 2 }}>
         {tabs.map(tab => (
           <Tab

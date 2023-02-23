@@ -1,5 +1,13 @@
 import { trpc } from "@/utils/trpc";
-import { Avatar, Box, Stack, Typography } from "@mui/material";
+import { PersonAdd } from "@mui/icons-material";
+import {
+  Avatar,
+  Box,
+  Chip,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useSession } from "next-auth/react";
 import React from "react";
 
@@ -10,6 +18,7 @@ const ProfileHeader: React.FC<{
   nbPosts: number | undefined | null;
 }> = ({ userId, userImage, userName, nbPosts }) => {
   const { data: session } = useSession();
+  const isSameUser = session?.user.id === userId;
   const { data } = trpc.posts.byProfileId.useQuery({ userId });
 
   return (
@@ -25,6 +34,13 @@ const ProfileHeader: React.FC<{
         alt=''
       />
       <Box>
+        {!isSameUser && (
+          <Stack direction='row' gap={1} alignItems='center'>
+            <Chip icon={<PersonAdd />} clickable color='success'>
+              <Typography>Ajouter en ami</Typography>
+            </Chip>
+          </Stack>
+        )}
         <Typography variant='h1'>{userName}</Typography>
         {nbPosts && (
           <Typography>
