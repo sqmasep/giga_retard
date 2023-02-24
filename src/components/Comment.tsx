@@ -35,8 +35,6 @@ interface Comment {
   reportButton?: boolean;
   defaultLike?: boolean;
   defaultDislike?: boolean;
-  nbLike?: number;
-  nbDislike?: number;
 }
 
 const Comment: React.FC<Comment> = ({
@@ -50,13 +48,18 @@ const Comment: React.FC<Comment> = ({
   reportButton = false,
   defaultLike = false,
   defaultDislike = false,
-  nbLike,
-  nbDislike,
 }) => {
   const { data: session } = useSession();
+  const { data } = trpc.comments.nbInteraction.useQuery({ commentId });
   const isAuthor = session?.user.id === userId;
   const deleteMutation = trpc.comments.delete.useMutation();
-  const interactionMutation = trpc.comments.interaction.useMutation();
+  const utils = trpc.useContext();
+  const interactionMutation = trpc.comments.interaction.useMutation({
+    onSuccess: () => {
+      utils.comments.nbInteraction.invalidate();
+    },
+  });
+  const reportMutation = trpc.comments.report.useMutation();
 
   const [like, dislike, balance] = useBalance(
     "LIKE",
@@ -77,7 +80,10 @@ const Comment: React.FC<Comment> = ({
     deleteMutation.mutate({ commentId });
   };
 
-  const handleReport = () => {};
+  const handleReport = () => {
+    // FIXME: need confirm obviously
+    reportMutation.mutate({ commentId });
+  };
 
   return (
     <Paper elevation={2} sx={{ p: 3 }}>
@@ -103,20 +109,25 @@ const Comment: React.FC<Comment> = ({
         <Stack direction='row' gap={1}>
           <Stack alignItems='center' direction='row'>
             <IconButton
-              disabled={isAuthor}
+              disabled={isAuthor || !session?.user}
               color='primary'
               onClick={() => balance("LIKE")}
             >
               {like ? <ThumbUp /> : <ThumbUpOffAlt />}
             </IconButton>
-            <Typography variant='caption'>{nbLike ?? 0}</Typography>
+            <Typography variant='caption'>{data?.get("LIKE") ?? 0}</Typography>
           </Stack>
 
           <Stack alignItems='center' direction='row'>
-            <IconButton disabled={isAuthor} onClick={() => balance("DISLIKE")}>
+            <IconButton
+              disabled={isAuthor || !session?.user}
+              onClick={() => balance("DISLIKE")}
+            >
               {dislike ? <ThumbDown /> : <ThumbDownOffAlt />}
             </IconButton>
-            <Typography variant='caption'>{nbDislike ?? 0}</Typography>
+            <Typography variant='caption'>
+              {data?.get("DISLIKE") ?? 0}
+            </Typography>
           </Stack>
         </Stack>
 

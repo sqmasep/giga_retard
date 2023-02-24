@@ -21,6 +21,7 @@ const PostPage: React.FC = () => {
   return (
     <Container maxWidth='md'>
       <Stack gap={4}>
+        {/* FIXME: rating & saved not showing, we should get it through `data` */}
         <Card
           postId={query.postId as string}
           authorId={data?.authorId}

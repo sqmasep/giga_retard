@@ -40,8 +40,8 @@ export const commentsRouter = router({
     .mutation(async ({ ctx, input: { interaction, commentId } }) => {
       const userId = ctx.session.user.id;
 
-      const author = await ctx.prisma.commentInteraction.findFirst({
-        where: { commentId },
+      const author = await ctx.prisma.comment.findFirst({
+        where: { id: commentId },
         select: { userId: true },
       });
 
@@ -79,7 +79,35 @@ export const commentsRouter = router({
       });
     }),
 
+  nbInteraction: publicProcedure
+    .input(z.object({ commentId: z.string().uuid() }))
+    .query(async ({ ctx, input }) => {
+      const interactions = await ctx.prisma.commentInteraction.groupBy({
+        by: ["interaction"],
+        where: {
+          commentId: input.commentId,
+        },
+        _count: {
+          interaction: true,
+        },
+      });
+
+      const map = new Map();
+      interactions.forEach(i => map.set(i.interaction, i._count.interaction));
+
+      return map;
+    }),
+
   report: publicProcedure
     .input(z.object({ commentId: z.string().uuid() }))
-    .mutation(({ ctx, input }) => {}),
+    .mutation(async ({ ctx, input }) => {
+      // FIXME: the same user can report multiple times
+      // may not fix: even non-connected users can report
+      return await ctx.prisma.reportComment.create({
+        data: {
+          userId: ctx.session?.user.id || null,
+          commentId: input.commentId,
+        },
+      });
+    }),
 });
