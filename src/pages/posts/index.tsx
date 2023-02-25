@@ -7,7 +7,6 @@ import {
   Checkbox,
   CircularProgress,
   Container,
-  Grid,
   Stack,
   Typography,
 } from "@mui/material";
@@ -47,8 +46,8 @@ const Posts: React.FC = () => {
             <Card
               postId={post.id}
               title={post.title}
-              defaultSaved={!!post.savedPost[0]?.saved}
-              defaultRating={post.ratedPost[0]?.rating}
+              defaultSaved={!!post?.savedPost?.[0]?.saved}
+              defaultRating={post?.ratedPost?.[0]?.rating}
               description={post.description}
               date={post.createdAt}
               readMore

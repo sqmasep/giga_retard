@@ -37,7 +37,6 @@ interface CardProps {
   description?: string;
   defaultRating?: number | null;
   defaultSaved?: boolean;
-  average?: number;
   date?: Date | number;
   authorName?: string | null;
   authorImage?: string | null;
@@ -76,13 +75,13 @@ const Card: React.FC<CardProps> = ({
   authorName,
   authorImage,
   authorId,
-  average,
   date,
   deleteButton,
   readMore = false,
   deleted,
 }) => {
   const { data: session } = useSession();
+  const { data: average } = trpc.posts.rating.average.useQuery({ postId });
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
   const [isDialogOpen, toggleDialogOpen] = useToggle(false);
@@ -158,63 +157,60 @@ const Card: React.FC<CardProps> = ({
               alignItems='center'
               justifyContent='space-between'
             >
-              {session?.user.id !== authorId ? (
+              <Stack direction='row' alignItems='center' gap={1}>
+                <Rating
+                  disabled={!session || session.user.id === authorId}
+                  precision={0.5}
+                  value={rating}
+                  onChange={handleRate}
+                />
+                {average && average.length > 0 && average[0]._avg.rating && (
+                  <Typography variant='caption'>
+                    {average?.[0]?._avg.rating}/5
+                  </Typography>
+                )}
+              </Stack>
+              <Checkbox
+                disabled={!session}
+                icon={<BookmarkBorder />}
+                checkedIcon={<Bookmark />}
+                checked={saved}
+                onChange={handleSave}
+              />
+              {deleteButton && (
                 <>
-                  <Stack direction='row' alignItems='center' gap={1}>
-                    <Rating
-                      disabled={!session}
-                      precision={0.5}
-                      value={rating}
-                      onChange={handleRate}
-                    />
-                    {average && (
-                      <Typography variant='caption'>{average}</Typography>
-                    )}
-                  </Stack>
-                  <Checkbox
-                    disabled={!session}
-                    icon={<BookmarkBorder />}
-                    checkedIcon={<Bookmark />}
-                    checked={saved}
-                    onChange={handleSave}
-                  />
+                  <IconButton
+                    sx={{ marginLeft: "auto" }}
+                    onClick={() => toggleDialogOpen(true)}
+                  >
+                    <DeleteForever />
+                  </IconButton>
+                  <Dialog
+                    open={isDialogOpen}
+                    onClose={() => toggleDialogOpen(false)}
+                  >
+                    <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        Cela causera une suppression irréversible du post!
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Stack gap={2} direction='row'>
+                        <Button
+                          variant='outlined'
+                          onClick={() => toggleDialogOpen(false)}
+                        >
+                          Non! Annule!
+                        </Button>
+                        <Button variant='contained' onClick={handleDelete}>
+                          Je confirme!
+                        </Button>
+                      </Stack>
+                    </DialogActions>
+                  </Dialog>
+                  {snackbar.open && <Snackbar onClose={snackbar.close} />}
                 </>
-              ) : (
-                deleteButton && (
-                  <>
-                    <IconButton
-                      sx={{ marginLeft: "auto" }}
-                      onClick={() => toggleDialogOpen(true)}
-                    >
-                      <DeleteForever />
-                    </IconButton>
-                    <Dialog
-                      open={isDialogOpen}
-                      onClose={() => toggleDialogOpen(false)}
-                    >
-                      <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
-                      <DialogContent>
-                        <DialogContentText>
-                          Cela causera une suppression irréversible du post!
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Stack gap={2} direction='row'>
-                          <Button
-                            variant='outlined'
-                            onClick={() => toggleDialogOpen(false)}
-                          >
-                            Non! Annule!
-                          </Button>
-                          <Button variant='contained' onClick={handleDelete}>
-                            Je confirme!
-                          </Button>
-                        </Stack>
-                      </DialogActions>
-                    </Dialog>
-                    {snackbar.open && <Snackbar onClose={snackbar.close} />}
-                  </>
-                )
               )}
             </Stack>
 

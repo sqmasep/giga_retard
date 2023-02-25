@@ -74,33 +74,38 @@ export const postsRouter = router({
     }),
 
   all: publicProcedure.query(async ({ ctx }) => {
-    const avg = await ctx.prisma.ratedPost.groupBy({
-      by: ["postId"],
-      _avg: {
-        rating: true,
-      },
-    });
-
     const posts = await ctx.prisma.post.findMany({
       where: {
         deleted: false,
       },
       include: {
         author: true,
-        savedPost: {
-          where: {
-            userId: ctx.session?.user.id,
-          },
-        },
-        ratedPost: {
-          where: {
-            userId: ctx.session?.user.id,
-          },
-        },
+        savedPost: ctx.session?.user.id
+          ? { where: { userId: ctx.session.user.id } }
+          : false,
+        ratedPost: ctx.session?.user.id
+          ? { where: { userId: ctx.session.user.id } }
+          : false,
       },
     });
 
     return posts;
+  }),
+
+  rating: router({
+    average: publicProcedure
+      .input(z.object({ postId: z.string().uuid() }))
+      .query(async ({ ctx, input }) => {
+        return await ctx.prisma.ratedPost.groupBy({
+          by: ["postId"],
+          _avg: {
+            rating: true,
+          },
+          where: {
+            postId: input.postId,
+          },
+        });
+      }),
   }),
 
   byPostId: publicProcedure
