@@ -62,6 +62,8 @@ model User {
   Friend             Friend[]             @relation("FriendRequest")
   friendRequest      Friend[]             @relation("FriendRequestReceived")
   ReportComment      ReportComment[]
+  Following          Follow[]             @relation("Following")
+  FollowedBy         Follow[]             @relation("FollowedBy")
 }
 
 model Post {
@@ -130,6 +132,19 @@ model CommentInteraction {
   @@unique([commentId, userId])
 }
 
+model Follow {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation("FollowedBy", fields: [userId], references: [id])
+  userId    String
+  byUser    User     @relation("Following", fields: [byUserId], references: [id])
+  byUserId  String
+  follow    Boolean  @default(true)
+
+  @@unique([byUserId, userId])
+}
+
 model Friend {
   id       String   @id @default(uuid())
   date     DateTime @default(now())
@@ -138,6 +153,8 @@ model Friend {
   byUserId String
   toUser   User     @relation("FriendRequestReceived", fields: [toUserId], references: [id])
   toUserId String
+
+  @@unique([byUserId, toUserId])
 }
 
 model Notification {

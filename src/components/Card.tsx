@@ -165,18 +165,24 @@ const Card: React.FC<CardProps> = ({
                   onChange={handleRate}
                 />
                 {average && average.length > 0 && average[0]._avg.rating && (
-                  <Typography variant='caption'>
-                    {average?.[0]?._avg.rating}/5
-                  </Typography>
+                  <Tooltip title='Moyenne des votes'>
+                    <Typography variant='caption'>
+                      {average?.[0]?._avg.rating}/5
+                    </Typography>
+                  </Tooltip>
                 )}
               </Stack>
-              <Checkbox
-                disabled={!session}
-                icon={<BookmarkBorder />}
-                checkedIcon={<Bookmark />}
-                checked={saved}
-                onChange={handleSave}
-              />
+              {session?.user.id !== authorId && (
+                <Tooltip title='Sauvegarder le post'>
+                  <Checkbox
+                    disabled={!session}
+                    icon={<BookmarkBorder />}
+                    checkedIcon={<Bookmark />}
+                    checked={saved}
+                    onChange={handleSave}
+                  />
+                </Tooltip>
+              )}
               {deleteButton && (
                 <>
                   <IconButton
