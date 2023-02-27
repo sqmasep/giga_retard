@@ -4,7 +4,7 @@ import { NextPageWithLayout } from "@/pages/_app";
 import { trpc } from "@/utils/trpc";
 import { Typography } from "@mui/material";
 import Card from "../../components/Card";
-import CardList from "../../components/ui/CardList";
+import List from "@/components/ui/List";
 
 const SavedPosts: NextPageWithLayout = () => {
   const { data, isError, isLoading } = trpc.posts.savedPosts.useQuery();
@@ -14,7 +14,7 @@ const SavedPosts: NextPageWithLayout = () => {
       {isLoading ? (
         <Loading m={12} />
       ) : data && data.length ? (
-        <CardList data={data}>
+        <List of={data}>
           {({ postId, saved, Post }) => (
             <Card
               key={postId}
@@ -29,7 +29,7 @@ const SavedPosts: NextPageWithLayout = () => {
               defaultRating={Post.ratedPost[0]?.rating}
             />
           )}
-        </CardList>
+        </List>
       ) : (
         <Typography>Pas de posts sauvegardés :(</Typography>
       )}

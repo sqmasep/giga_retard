@@ -46,6 +46,10 @@ const friendsRouter = router({
         where: {
           // FIXME: uh uh, how to fix this. maybe use the id instead,
           // would require getting the id in user.byProfileId()?
+          //
+          // basically the problem is that any user can be byUser or toUser, so we cannot
+          // really use it as input
+          //
           // if i do so, i need to update the input
           // maybe restructure the Friend model
           // byUserId_toUserId: {

@@ -1,19 +1,19 @@
 import { Grid } from "@mui/material";
 import React from "react";
 
-interface CardListProps<T> {
+interface ListProps<T> {
   children: (card: T, i: number, arr: T[]) => React.ReactNode;
-  data: T[];
+  of: T[];
 }
 
-const CardList = <T,>({
+const List = <T,>({
   children,
-  data,
+  of,
   ...props
-}: CardListProps<T> & Omit<React.ComponentProps<typeof Grid>, "children">) => {
+}: ListProps<T> & Omit<React.ComponentProps<typeof Grid>, "children">) => {
   return (
     <Grid container spacing={4} {...props}>
-      {data.map((card, i, arr) => (
+      {of.map((card, i, arr) => (
         <Grid key={i} item xs={12} sm={6} lg={4}>
           {children(card, i, arr)}
         </Grid>
@@ -22,4 +22,4 @@ const CardList = <T,>({
   );
 };
 
-export default CardList;
+export default List;

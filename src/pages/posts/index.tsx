@@ -1,5 +1,5 @@
 import Card from "@/components/Card";
-import CardList from "@/components/ui/CardList";
+import List from "@/components/ui/List";
 import { trpc } from "@/utils/trpc";
 import {
   Box,
@@ -41,7 +41,7 @@ const Posts: React.FC = () => {
       </Box>
 
       {data?.length ? (
-        <CardList data={data}>
+        <List of={data}>
           {post => (
             <Card
               postId={post.id}
@@ -56,7 +56,7 @@ const Posts: React.FC = () => {
               authorName={post.author?.name}
             />
           )}
-        </CardList>
+        </List>
       ) : isLoading ? (
         <CircularProgress />
       ) : (
