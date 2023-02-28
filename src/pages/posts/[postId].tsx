@@ -11,7 +11,7 @@ import React from "react";
 const PostPage: React.FC = () => {
   const { data: session } = useSession();
   const { query } = useRouter();
-  const { data, error, isLoading } = trpc.posts.byPostId.useQuery(
+  const { data, error, isLoading, isSuccess } = trpc.posts.byPostId.useQuery(
     {
       postId: query.postId as string,
     },
@@ -22,14 +22,19 @@ const PostPage: React.FC = () => {
     <Container maxWidth='md'>
       <Stack gap={4}>
         {/* FIXME: rating & saved not showing, we should get it through `data` */}
-        <Card
-          postId={query.postId as string}
-          authorId={data?.authorId}
-          authorImage={data?.author.image}
-          authorName={data?.author.name}
-          title={data?.title}
-          description={data?.description}
-        />
+        {isSuccess && (
+          <Card
+            key={data.id}
+            postId={query.postId as string}
+            authorId={data?.authorId}
+            authorImage={data?.author.image}
+            authorName={data?.author.name}
+            title={data?.title}
+            description={data?.description}
+            defaultRating={data.ratedPost?.[0].rating}
+            defaultSaved={data.savedPost?.[0].saved}
+          />
+        )}
         {/* FIXME: query && query.postId but cleaner */}
         {/* ^ am i sure of that? data is already enabled when query.postId */}
         {data?.Comment.length && (

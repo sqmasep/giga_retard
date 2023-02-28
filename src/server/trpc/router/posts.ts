@@ -120,6 +120,18 @@ export const postsRouter = router({
           id: input.postId,
         },
         include: {
+          savedPost: {
+            where: {
+              // postId: input.postId,
+              userId: ctx.session?.user.id,
+            },
+          },
+          ratedPost: {
+            where: {
+              postId: input.postId,
+              userId: ctx.session?.user.id,
+            },
+          },
           author: true,
           Comment: {
             include: {
