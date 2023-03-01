@@ -19,6 +19,7 @@ const friendsRouter = router({
     }),
 
   // FIXME: probably refactor this to something like .upsert() for accepted / removing a friend?
+  // would use my "set" convention
   accept: requireAuthProcedure
     .input(
       z.object({
@@ -55,6 +56,53 @@ const friendsRouter = router({
           // byUserId_toUserId: {
           //
           // }
+        },
+      });
+    }),
+
+  ofMine: requireAuthProcedure
+    .input(
+      z.object({
+        filter: z.enum(["ACCEPTED", "ASKING", "PENDING"]),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+
+      return await ctx.prisma.friend.findMany({
+        where:
+          input.filter === "ACCEPTED"
+            ? {
+                OR: {
+                  byUserId: userId,
+                  toUserId: userId,
+                },
+                accepted: true,
+              }
+            : input.filter === "ASKING"
+            ? {
+                toUserId: userId,
+                accepted: false,
+              }
+            : input.filter === "PENDING"
+            ? {
+                byUserId: userId,
+                accepted: false,
+              }
+            : undefined,
+        include: {
+          byUser: {
+            include: {
+              FollowedBy: true,
+              Following: true,
+            },
+          },
+          toUser: {
+            include: {
+              FollowedBy: true,
+              Following: true,
+            },
+          },
         },
       });
     }),

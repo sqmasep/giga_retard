@@ -18,8 +18,14 @@ const ProfileHeader: React.FC<{
   nbPosts: number | undefined | null;
 }> = ({ userId, userImage, userName, nbPosts }) => {
   const { data: session } = useSession();
-  const isSameUser = session?.user.id === userId;
   const { data } = trpc.posts.byProfileId.useQuery({ userId });
+
+  const isSameUser = session?.user.id === userId;
+
+  const addFriendMutation = trpc.users.friends.add.useMutation();
+  const handleAddFriend = () => {
+    addFriendMutation.mutate({ userId });
+  };
 
   return (
     <Stack my={8} direction='row' alignItems='center' gap={8}>
@@ -36,9 +42,12 @@ const ProfileHeader: React.FC<{
       <Box>
         {!isSameUser && (
           <Stack direction='row' gap={1} alignItems='center'>
-            <Chip icon={<PersonAdd />} clickable color='success'>
-              <Typography>Ajouter en ami</Typography>
-            </Chip>
+            <Chip
+              icon={<PersonAdd />}
+              color='primary'
+              label='Ajouter en ami'
+              onClick={handleAddFriend}
+            />
           </Stack>
         )}
         <Typography variant='h1'>{userName}</Typography>

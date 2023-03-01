@@ -52,8 +52,14 @@ const Comment: React.FC<Comment> = ({
   const { data: session } = useSession();
   const { data } = trpc.comments.nbInteraction.useQuery({ commentId });
   const isAuthor = session?.user.id === userId;
-  const deleteMutation = trpc.comments.delete.useMutation();
+
   const utils = trpc.useContext();
+  const deleteMutation = trpc.comments.delete.useMutation({
+    onSuccess: () => {
+      // FIXME: the router is not well structured i guess, it holds
+      utils.comments.invalidate();
+    },
+  });
   const interactionMutation = trpc.comments.interaction.useMutation({
     onSuccess: () => {
       utils.comments.nbInteraction.invalidate();

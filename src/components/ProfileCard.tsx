@@ -14,6 +14,8 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
+import Confirm from "./Confirm";
+import SquaredIconButton from "./SquaredIconButton";
 
 interface FriendProps {
   userId: string;
@@ -34,12 +36,19 @@ const ProfileCard: React.FC<FriendProps> = ({
 }) => {
   const [follow, toggleFollow] = useToggle(defaultFollow);
   const [friend, toggleFriend] = useToggle(defaultFriend);
+  const [dialog, toggleDialog] = useToggle();
 
-  const removeFriendMutation = trpc.users.friends.remove.useMutation();
+  const utils = trpc.useContext();
+
+  const removeFriendMutation = trpc.users.friends.remove.useMutation({
+    onSuccess: () => {
+      utils.users.friends.invalidate();
+    },
+  });
 
   const handleRemove = () => {
     toggleFriend();
-    removeFriendMutation;
+    removeFriendMutation.mutate({ userId });
   };
 
   return (
@@ -67,21 +76,21 @@ const ProfileCard: React.FC<FriendProps> = ({
               title={friend ? "Retirer des amis" : "Ajouter en ami"}
               placement='top'
             >
-              <IconButton
-                sx={{
-                  borderRadius: 2,
-                  border: "2px solid #eee",
-                }}
-                centerRipple={false}
-                onClick={handleRemove}
-              >
+              <SquaredIconButton onClick={() => toggleDialog(true)}>
                 {friend ? (
                   <PersonRemove fontSize='small' />
                 ) : (
                   <PersonAddAlt1 fontSize='small' />
                 )}
-              </IconButton>
+              </SquaredIconButton>
             </Tooltip>
+            <Confirm
+              open={dialog}
+              toggle={toggleDialog}
+              onConfirm={handleRemove}
+              title='Supprimer votre ami ?'
+              description='Il faudra le redemander en ami si vous vous réconciliez!'
+            />
           </Stack>
         </Stack>
         <Button>folo</Button>

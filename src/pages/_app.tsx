@@ -1,5 +1,6 @@
-import "@total-typescript/ts-reset"
+import "@total-typescript/ts-reset";
 
+import React from "react";
 import Navbar from "@/components/ui/Navbar";
 import Overlay from "@/components/ui/Overlay";
 import theme from "@/lib/mui/theme";
@@ -9,7 +10,6 @@ import { NextPage } from "next";
 import { SessionProvider } from "next-auth/react";
 import type { AppProps, AppType } from "next/app";
 import Head from "next/head";
-import React from "react";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

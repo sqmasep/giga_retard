@@ -31,8 +31,8 @@ const PostPage: React.FC = () => {
             authorName={data?.author.name}
             title={data?.title}
             description={data?.description}
-            defaultRating={data.ratedPost?.[0].rating}
-            defaultSaved={data.savedPost?.[0].saved}
+            defaultRating={data.ratedPost?.[0]?.rating}
+            defaultSaved={data.savedPost?.[0]?.saved}
           />
         )}
         {/* FIXME: query && query.postId but cleaner */}

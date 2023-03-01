@@ -6,30 +6,23 @@ import { Bookmark, BookmarkBorder, DeleteForever } from "@mui/icons-material";
 import {
   Card as MuiCard,
   CardContent,
-  CardActions,
   Typography,
   Rating,
   Stack,
-  Avatar,
   Checkbox,
   Tooltip,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   Button,
   ButtonBase,
   styled,
   Snackbar,
   Link,
-  Skeleton,
 } from "@mui/material";
 import { useSession } from "next-auth/react";
 import NextLink from "next/link";
 import React, { useState } from "react";
 import NamedAvatar from "./NamedAvatar";
+import Confirm from "./Confirm";
 
 interface CardProps {
   postId: string;
@@ -84,7 +77,7 @@ const Card: React.FC<CardProps> = ({
   const { data: average } = trpc.posts.rating.average.useQuery({ postId });
   const [rating, setRating] = useState(defaultRating);
   const [saved, setSaved] = useState(defaultSaved);
-  const [isDialogOpen, toggleDialogOpen] = useToggle(false);
+  const [dialog, toggleDialog] = useToggle(false);
   const snackbar = useSnackbar();
   const utils = trpc.useContext();
 
@@ -120,7 +113,7 @@ const Card: React.FC<CardProps> = ({
   const handleDelete = () => {
     console.log(postId);
     deleteMutation.mutate({ postId });
-    toggleDialogOpen(false);
+    toggleDialog(false);
   };
 
   return (
@@ -187,34 +180,17 @@ const Card: React.FC<CardProps> = ({
                 <>
                   <IconButton
                     sx={{ marginLeft: "auto" }}
-                    onClick={() => toggleDialogOpen(true)}
+                    onClick={() => toggleDialog(true)}
                   >
                     <DeleteForever />
                   </IconButton>
-                  <Dialog
-                    open={isDialogOpen}
-                    onClose={() => toggleDialogOpen(false)}
-                  >
-                    <DialogTitle>Supprimer le post "{title}" ?</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText>
-                        Cela causera une suppression irréversible du post!
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Stack gap={2} direction='row'>
-                        <Button
-                          variant='outlined'
-                          onClick={() => toggleDialogOpen(false)}
-                        >
-                          Non! Annule!
-                        </Button>
-                        <Button variant='contained' onClick={handleDelete}>
-                          Je confirme!
-                        </Button>
-                      </Stack>
-                    </DialogActions>
-                  </Dialog>
+                  <Confirm
+                    open={dialog}
+                    toggle={toggleDialog}
+                    onConfirm={handleDelete}
+                    title={`Supprimer le post "${title}" ?`}
+                    description='Cela causera une suppression irréversible du post!'
+                  />
                   {snackbar.open && <Snackbar onClose={snackbar.close} />}
                 </>
               )}
