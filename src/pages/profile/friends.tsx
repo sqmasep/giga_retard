@@ -69,16 +69,19 @@ const Friends: NextPageWithLayout = () => {
 
         {data && (
           <List of={data}>
-            {({ accepted, byUserId, toUserId, toUser, byUser }) => {
+            {({ accepted, id, byUserId, toUserId, toUser, byUser }) => {
               const otherUser = myUserId === byUserId ? toUser : byUser;
               return (
                 <ProfileCard
+                  friendRequestId={id}
                   userId={otherUser.id}
                   userName={otherUser.name as string}
                   userImage={otherUser.image || ""}
                   lastConnection={Date.now()}
                   defaultFollow={false}
                   defaultFriend={accepted}
+                  removeFriendButton={accepted}
+                  acceptFriendRequestButton={!accepted}
                 />
               );
             }}
