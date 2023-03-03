@@ -1,7 +1,13 @@
 import useToggle from "@/hooks/useToggle";
 import { dateDistance } from "@/lib/date/dayFormat";
 import { trpc } from "@/utils/trpc";
-import { Close, PersonAddAlt1, PersonRemove } from "@mui/icons-material";
+import {
+  Check,
+  Close,
+  PersonAddAlt1,
+  PersonRemove,
+  Star,
+} from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -20,28 +26,27 @@ import SquaredIconButton from "./SquaredIconButton";
 interface FriendProps {
   friendRequestId: string;
   userId: string;
-  userImage?: string;
   userName: string;
+  userImage?: string;
   defaultFollow?: boolean;
   defaultFriend?: boolean;
   lastConnection?: number | Date;
   acceptFriendRequestButton?: boolean;
   removeFriendButton?: boolean;
+  cancelFriendButton?: boolean;
 }
 
 type TypeProps =
-  | {
+  | Partial<{
       tooltipLabel: string;
       dialogTitle: string;
       dialogDescription: string;
-    }
+    }>
   | false
   | undefined;
 
 const acceptProps: TypeProps = {
   tooltipLabel: "Accepter la demande d'ami",
-  dialogTitle: "",
-  dialogDescription: "",
 };
 
 const removeProps: TypeProps = {
@@ -52,8 +57,6 @@ const removeProps: TypeProps = {
 
 const defaultProps: TypeProps = {
   tooltipLabel: "Ajouter en ami",
-  dialogTitle: "",
-  dialogDescription: "",
 };
 
 const ProfileCard: React.FC<FriendProps> = ({
@@ -62,33 +65,48 @@ const ProfileCard: React.FC<FriendProps> = ({
   userImage,
   userName,
   lastConnection,
-  defaultFollow,
-  defaultFriend,
+  defaultFollow = false,
+  defaultFriend = false,
   acceptFriendRequestButton,
   removeFriendButton,
+  cancelFriendButton,
 }) => {
   const [follow, toggleFollow] = useToggle(defaultFollow);
   const [friend, toggleFriend] = useToggle(defaultFriend);
   const [dialog, toggleDialog] = useToggle();
 
   const utils = trpc.useContext();
+  const onSuccess = () => utils.users.friends.invalidate();
 
   const removeFriendMutation = trpc.users.friends.remove.useMutation({
-    onSuccess: () => {
-      utils.users.friends.invalidate();
-    },
+    onSuccess,
+  });
+  const setFriendMutation = trpc.users.friends.set.useMutation({
+    onSuccess,
   });
 
-  const acceptFriendMutation = trpc.users.friends.accept.useMutation();
+  const followMutation = trpc.users.follow.set.useMutation({
+    // FIXME: might not really invalidate anything, since most of the requests are from "post" route
+    onSuccess: () => utils.users.follow.invalidate(),
+  });
 
   const handleAccept = () => {
     toggleFriend();
-    acceptFriendMutation.mutate({ accepted: true, friendRequestId });
+    setFriendMutation.mutate({ accepted: true, friendRequestId });
   };
 
   const handleRemove = () => {
     toggleFriend();
-    removeFriendMutation.mutate({ userId });
+    removeFriendMutation.mutate({ friendRequestId });
+  };
+
+  const handleCancel = () => {
+    setFriendMutation.mutate({ accepted: false, friendRequestId });
+  };
+
+  const handleFollow = () => {
+    toggleFollow();
+    followMutation.mutate({ follow, userId });
   };
 
   const typeProps = acceptFriendRequestButton
@@ -107,6 +125,7 @@ const ProfileCard: React.FC<FriendProps> = ({
           gap={1}
         >
           <Stack direction='row' alignItems='center' gap={2}>
+            {/* FIXME: should be a link */}
             <Avatar src={userImage} alt='Friend' />
             <Stack>
               <Typography fontWeight={700}>{userName}</Typography>
@@ -118,29 +137,30 @@ const ProfileCard: React.FC<FriendProps> = ({
             </Stack>
           </Stack>
           <Stack direction='row' alignItems='center' gap={1}>
-            {acceptFriendRequestButton && (
-              <Tooltip title="Ignorer la demande d'ami" placement='top'>
-                {/* // TODO handleRemoveFriendRequest  */}
-                <SquaredIconButton color='error' onClick={() => {}}>
+            {cancelFriendButton && (
+              <Tooltip title="Retirer la demande d'ami" placement='top'>
+                <SquaredIconButton color='error' onClick={handleCancel}>
                   <Close />
                 </SquaredIconButton>
               </Tooltip>
             )}
-            <Tooltip title={typeProps.tooltipLabel} placement='top'>
-              <SquaredIconButton
-                onClick={() =>
-                  acceptFriendRequestButton
-                    ? handleAccept()
-                    : toggleDialog(true)
-                }
-              >
-                {removeFriendButton ? (
-                  <PersonRemove fontSize='small' />
-                ) : (
-                  <PersonAddAlt1 fontSize='small' />
-                )}
-              </SquaredIconButton>
-            </Tooltip>
+            {(removeFriendButton || acceptFriendRequestButton) && (
+              <Tooltip title={typeProps.tooltipLabel} placement='top'>
+                <SquaredIconButton
+                  onClick={() =>
+                    acceptFriendRequestButton
+                      ? handleAccept()
+                      : toggleDialog(true)
+                  }
+                >
+                  {removeFriendButton ? (
+                    <PersonRemove fontSize='small' />
+                  ) : (
+                    acceptFriendRequestButton && <Check color='success' />
+                  )}
+                </SquaredIconButton>
+              </Tooltip>
+            )}
             <Confirm
               open={dialog}
               toggle={toggleDialog}
@@ -150,7 +170,25 @@ const ProfileCard: React.FC<FriendProps> = ({
             />
           </Stack>
         </Stack>
-        <Button>folo</Button>
+
+        <Button
+          size='small'
+          sx={{ mt: 2 }}
+          color={follow ? "error" : "primary"}
+          onClick={handleFollow}
+        >
+          <Stack direction='row' gap={1} alignItems='center'>
+            {follow ? (
+              <>
+                <Close /> Ne plus suivre
+              </>
+            ) : (
+              <>
+                <Star /> Suivre
+              </>
+            )}
+          </Stack>
+        </Button>
       </CardContent>
     </Card>
   );

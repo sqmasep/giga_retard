@@ -24,6 +24,7 @@ const ProfileHeader: React.FC<{
 
   const addFriendMutation = trpc.users.friends.add.useMutation();
   const handleAddFriend = () => {
+    console.log("add friend");
     addFriendMutation.mutate({ userId });
   };
 

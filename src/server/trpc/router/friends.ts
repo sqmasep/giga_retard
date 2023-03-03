@@ -3,6 +3,7 @@ import { requireAuthProcedure } from "../middleware/auth";
 import { router } from "../trpc";
 
 const friendsRouter = router({
+  // FIXME: should rename it to "request"
   add: requireAuthProcedure
     .input(
       z.object({
@@ -10,7 +11,9 @@ const friendsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.friend.create({
+      console.log("friend request");
+
+      return await ctx.prisma.friend.create({
         data: {
           byUserId: ctx.session.user.id,
           toUserId: input.userId,
@@ -19,8 +22,7 @@ const friendsRouter = router({
     }),
 
   // FIXME: probably refactor this to something like .upsert() for accepted / removing a friend?
-  // would use my "set" convention
-  accept: requireAuthProcedure
+  set: requireAuthProcedure
     .input(
       z.object({
         friendRequestId: z.string().uuid(),
@@ -28,7 +30,15 @@ const friendsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.friend.update({
+      if (!input.accepted) {
+        return await ctx.prisma.friend.delete({
+          where: {
+            id: input.friendRequestId,
+          },
+        });
+      }
+
+      return await ctx.prisma.friend.update({
         data: { accepted: input.accepted },
         where: {
           id: input.friendRequestId,
@@ -39,7 +49,7 @@ const friendsRouter = router({
   remove: requireAuthProcedure
     .input(
       z.object({
-        userId: z.string().uuid(),
+        friendRequestId: z.string().uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -56,6 +66,8 @@ const friendsRouter = router({
           // byUserId_toUserId: {
           //
           // }
+
+          id: input.friendRequestId,
         },
       });
     }),
@@ -73,10 +85,14 @@ const friendsRouter = router({
         where:
           input.filter === "ACCEPTED"
             ? {
-                OR: {
-                  byUserId: userId,
-                  toUserId: userId,
-                },
+                OR: [
+                  {
+                    byUserId: userId,
+                  },
+                  {
+                    toUserId: userId,
+                  },
+                ],
                 accepted: true,
               }
             : input.filter === "ASKING"

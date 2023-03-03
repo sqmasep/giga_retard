@@ -7,13 +7,7 @@ import { useSession } from "next-auth/react";
 import { Stack, Tab, Tabs } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  AccessTime,
-  Check,
-  HelpOutline,
-  PsychologyAlt,
-  QuestionMark,
-} from "@mui/icons-material";
+import { AccessTime, Check, QuestionMark } from "@mui/icons-material";
 
 type FriendsFilter = "ACCEPTED" | "ASKING" | "PENDING";
 
@@ -33,7 +27,6 @@ const Friends: NextPageWithLayout = () => {
 
   return (
     <>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <Stack gap={2} direction='row'>
         <Tabs
           orientation='vertical'
@@ -81,7 +74,8 @@ const Friends: NextPageWithLayout = () => {
                   defaultFollow={false}
                   defaultFriend={accepted}
                   removeFriendButton={accepted}
-                  acceptFriendRequestButton={!accepted}
+                  acceptFriendRequestButton={!accepted && toUserId === myUserId}
+                  cancelFriendButton={!accepted}
                 />
               );
             }}
