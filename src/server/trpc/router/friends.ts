@@ -1,17 +1,38 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { requireAuthProcedure } from "../middleware/auth";
 import { router } from "../trpc";
 
 const friendsRouter = router({
-  // FIXME: should rename it to "request"
-  add: requireAuthProcedure
+  request: requireAuthProcedure
     .input(
       z.object({
         userId: z.string().uuid(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("friend request");
+      const askerId = ctx.session.user.id;
+      const alreadyRequested = await ctx.prisma.friend.findFirst({
+        where: {
+          OR: [
+            {
+              AND: {
+                byUserId: askerId,
+                toUserId: input.userId,
+              },
+            },
+            {
+              AND: {
+                byUserId: input.userId,
+                toUserId: askerId,
+              },
+            },
+          ],
+        },
+      });
+
+      console.log(alreadyRequested);
+      if (alreadyRequested) throw new TRPCError({ code: "CONFLICT" });
 
       return await ctx.prisma.friend.create({
         data: {
@@ -55,18 +76,6 @@ const friendsRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.prisma.friend.delete({
         where: {
-          // FIXME: uh uh, how to fix this. maybe use the id instead,
-          // would require getting the id in user.byProfileId()?
-          //
-          // basically the problem is that any user can be byUser or toUser, so we cannot
-          // really use it as input
-          //
-          // if i do so, i need to update the input
-          // maybe restructure the Friend model
-          // byUserId_toUserId: {
-          //
-          // }
-
           id: input.friendRequestId,
         },
       });
@@ -109,14 +118,16 @@ const friendsRouter = router({
         include: {
           byUser: {
             include: {
-              FollowedBy: true,
-              Following: true,
+              FollowedBy: {
+                where: {
+                  byUserId: userId,
+                },
+              },
             },
           },
           toUser: {
             include: {
               FollowedBy: true,
-              Following: true,
             },
           },
         },

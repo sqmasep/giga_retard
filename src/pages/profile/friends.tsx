@@ -82,7 +82,6 @@ const Friends: NextPageWithLayout = () => {
           </List>
         )}
       </Stack>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
     </>
   );
 };

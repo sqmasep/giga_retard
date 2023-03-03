@@ -87,7 +87,7 @@ const ProfileCard: React.FC<FriendProps> = ({
 
   const followMutation = trpc.users.follow.set.useMutation({
     // FIXME: might not really invalidate anything, since most of the requests are from "post" route
-    onSuccess: () => utils.users.follow.invalidate(),
+    onSuccess: () => utils.users.friends.invalidate(),
   });
 
   const handleAccept = () => {
@@ -105,8 +105,11 @@ const ProfileCard: React.FC<FriendProps> = ({
   };
 
   const handleFollow = () => {
-    toggleFollow();
-    followMutation.mutate({ follow, userId });
+    // FIXME: omg that's terrible i should update my hook
+    // i also should fix those two non-linked actions that are everywhere
+    // it works but it's ugly solution
+    toggleFollow(!follow);
+    followMutation.mutate({ follow: !follow, userId });
   };
 
   const typeProps = acceptFriendRequestButton
@@ -176,18 +179,9 @@ const ProfileCard: React.FC<FriendProps> = ({
           sx={{ mt: 2 }}
           color={follow ? "error" : "primary"}
           onClick={handleFollow}
+          startIcon={follow ? <Close /> : <Star />}
         >
-          <Stack direction='row' gap={1} alignItems='center'>
-            {follow ? (
-              <>
-                <Close /> Ne plus suivre
-              </>
-            ) : (
-              <>
-                <Star /> Suivre
-              </>
-            )}
-          </Stack>
+          {follow ? "Ne plus suivre" : "Suivre"}
         </Button>
       </CardContent>
     </Card>

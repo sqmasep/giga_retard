@@ -22,7 +22,7 @@ const ProfileHeader: React.FC<{
 
   const isSameUser = session?.user.id === userId;
 
-  const addFriendMutation = trpc.users.friends.add.useMutation();
+  const addFriendMutation = trpc.users.friends.request.useMutation();
   const handleAddFriend = () => {
     console.log("add friend");
     addFriendMutation.mutate({ userId });

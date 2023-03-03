@@ -4,6 +4,7 @@ import {
   Bookmark,
   Description,
   PeopleAlt,
+  Star,
 } from "@mui/icons-material";
 import { Tab, Tabs } from "@mui/material";
 import { useSession } from "next-auth/react";
@@ -43,6 +44,12 @@ const tabs = [
     value: "friends",
     icon: <PeopleAlt />,
     href: "/profile/friends",
+  } as const,
+  {
+    label: "Follow",
+    value: "follow",
+    icon: <Star />,
+    href: "/profile/follow",
   } as const,
 ] satisfies TabProps[];
 

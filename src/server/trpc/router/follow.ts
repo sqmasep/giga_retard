@@ -30,6 +30,32 @@ const followRouter = router({
         },
       });
     }),
+
+  ofMine: requireAuthProcedure.query(async ({ ctx, input }) => {
+    const byUserId = ctx.session.user.id;
+
+    return await ctx.prisma.follow.findMany({
+      where: {
+        byUserId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }),
+
+  me: requireAuthProcedure.query(async ({ ctx, input }) => {
+    const userId = ctx.session.user.id;
+
+    return await ctx.prisma.follow.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        user: true,
+      },
+    });
+  }),
 });
 
 export default followRouter;
