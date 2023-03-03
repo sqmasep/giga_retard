@@ -61,7 +61,7 @@ const Friends: NextPageWithLayout = () => {
         </Tabs>
 
         {data && (
-          <List of={data}>
+          <List of={data} gridKey={friend => friend.id}>
             {({ accepted, id, byUserId, toUserId, toUser, byUser }) => {
               const otherUser = myUserId === byUserId ? toUser : byUser;
               return (
@@ -71,7 +71,7 @@ const Friends: NextPageWithLayout = () => {
                   userName={otherUser.name as string}
                   userImage={otherUser.image || ""}
                   lastConnection={Date.now()}
-                  defaultFollow={false}
+                  defaultFollow={otherUser.FollowedBy?.[0]?.follow}
                   defaultFriend={accepted}
                   removeFriendButton={accepted}
                   acceptFriendRequestButton={!accepted && toUserId === myUserId}
@@ -82,6 +82,7 @@ const Friends: NextPageWithLayout = () => {
           </List>
         )}
       </Stack>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
     </>
   );
 };

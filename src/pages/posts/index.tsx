@@ -41,7 +41,7 @@ const Posts: React.FC = () => {
       </Box>
 
       {data?.length ? (
-        <List of={data}>
+        <List of={data} gridKey={post => post.id}>
           {post => (
             <Card
               postId={post.id}

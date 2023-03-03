@@ -14,7 +14,7 @@ const SavedPosts: NextPageWithLayout = () => {
       {isLoading ? (
         <Loading m={12} />
       ) : data && data.length ? (
-        <List of={data}>
+        <List of={data} gridKey={saved => saved.id}>
           {({ postId, saved, Post }) => (
             <Card
               key={postId}

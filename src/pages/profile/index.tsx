@@ -23,7 +23,7 @@ const Profile: NextPageWithLayout = () => {
       />
 
       {data && (
-        <List of={data.posts} mt={4}>
+        <List of={data.posts} gridKey={post => post.id} mt={4}>
           {post => (
             <Card
               title={post.title}
